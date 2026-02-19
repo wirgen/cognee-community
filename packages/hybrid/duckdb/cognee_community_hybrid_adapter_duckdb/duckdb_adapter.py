@@ -67,6 +67,7 @@ class DuckDBAdapter(VectorDBInterface, GraphDBInterface):
         embedding_engine: EmbeddingEngine | None = None,
         graph_database_username: str | None = None,
         graph_database_password: str | None = None,
+        **kwargs,
     ) -> None:
         self.database_url = url
         self.api_key = api_key

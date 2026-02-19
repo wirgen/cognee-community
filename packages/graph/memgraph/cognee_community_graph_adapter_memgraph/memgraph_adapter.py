@@ -63,6 +63,7 @@ class MemgraphAdapter(GraphDBInterface):
         graph_database_username: Optional[str] = None,
         graph_database_password: Optional[str] = None,
         driver: Optional[Any] = None,
+        **kwargs,
     ):
         # Only use auth if both username and password are provided
         auth = None

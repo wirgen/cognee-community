@@ -1,12 +1,12 @@
 [project]
 name = "cognee-community-graph-adapter-memgraph"
-version = "0.1.1"
+version = "0.1.2"
 description = "Memgraph graph database adapter for cognee"
 authors = [
     {name = "Cognee Team", email = "hello@cognee.ai"},
 ]
 dependencies = [
-    "cognee[neo4j]>=0.4.0",
+    "cognee[neo4j]>=0.5.2",
     "starlette>=0.48.0",
     "instructor>=1.11"
 ]
