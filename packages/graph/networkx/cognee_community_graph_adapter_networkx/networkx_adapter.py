@@ -14,7 +14,6 @@ from cognee.infrastructure.databases.exceptions.exceptions import (
 )
 from cognee.infrastructure.databases.graph.graph_db_interface import (
     GraphDBInterface,
-    record_graph_changes,
 )
 from cognee.infrastructure.engine import DataPoint
 from cognee.infrastructure.engine.utils import parse_id
@@ -37,12 +36,20 @@ class NetworkXAdapter(GraphDBInterface):
     #:TODO: Since networkx is not a real database these params dont make sense but they are
     #:TODO: needed for now because of cognee third party graph db interface handling.
     #:TODO: We have to find a better solution
-    def __new__(cls, graph_database_url, graph_database_username, graph_database_password):
+    def __new__(
+        cls,
+        graph_database_url,
+        graph_database_username,
+        graph_database_password,
+        database_name,
+        **kwargs,
+    ):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.graph_database_url = graph_database_url
             cls._instance.graph_database_username = graph_database_username
             cls._instance.graph_database_password = graph_database_password
+            cls._instance.database_name = database_name if database_name else "cognee_graph"
         return cls._instance
 
     def __init__(
@@ -50,8 +57,11 @@ class NetworkXAdapter(GraphDBInterface):
         graph_database_url=None,
         graph_database_username=None,
         graph_database_password=None,
+        database_name="",
+        **kwargs,
     ):
-        self.filename = "cognee_graph.pkl"
+        self.database_name = database_name if database_name else "cognee_graph"
+        self.filename = f"{self.database_name}.pkl"
         self.graph = nx.MultiDiGraph()
         self.graph_database_url = graph_database_url
         self.graph_database_username = graph_database_username
@@ -114,7 +124,6 @@ class NetworkXAdapter(GraphDBInterface):
 
         await self.save_graph_to_file(self.filename)
 
-    @record_graph_changes
     async def add_nodes(self, nodes: list[DataPoint]) -> None:
         """
         Bulk add multiple nodes to the graph and persist the graph state to the file.
@@ -181,7 +190,6 @@ class NetworkXAdapter(GraphDBInterface):
 
         return result
 
-    @record_graph_changes
     async def add_edge(
         self,
         from_node: str,
@@ -213,7 +221,6 @@ class NetworkXAdapter(GraphDBInterface):
 
         await self.save_graph_to_file(self.filename)
 
-    @record_graph_changes
     async def add_edges(self, edges: list[tuple[str, str, str, dict]]) -> None:
         """
         Bulk add multiple edges to the graph and persist the graph state to the file.
