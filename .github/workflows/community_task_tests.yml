@@ -29,7 +29,7 @@ on:
       EMBEDDING_API_VERSION:
         required: true
       SGAI_API_KEY:
-        required: false
+        required: true
 
 jobs:
   test-scrapegraph-example:
