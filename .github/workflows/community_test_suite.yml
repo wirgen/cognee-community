@@ -79,7 +79,23 @@ jobs:
 
   test-community-retrievers:
     name: Test Community Retrievers
-    uses: ./.github/workflows/test_retrievers_general.yml
+    uses: ./.github/workflows/community_retriever_tests.yml
+    with:
+      python-version: ${{ inputs.python-version || '3.11.x' }}
+      event-type: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'new-main-release' && 'new-main-release' || '' }}
+    secrets:
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_API_VERSION: ${{ secrets.LLM_API_VERSION }}
+      EMBEDDING_MODEL: ${{ secrets.EMBEDDING_MODEL }}
+      EMBEDDING_ENDPOINT: ${{ secrets.EMBEDDING_ENDPOINT }}
+      EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+      EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
+
+  test-community-tasks:
+    name: Test Community Tasks
+    uses: ./.github/workflows/community_task_tests.yml
     with:
       python-version: ${{ inputs.python-version || '3.11.x' }}
       event-type: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'new-main-release' && 'new-main-release' || '' }}
