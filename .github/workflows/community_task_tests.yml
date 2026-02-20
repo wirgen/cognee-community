@@ -1,0 +1,67 @@
+name: Community Task Tests
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11.x"
+      event-type:
+        required: false
+        type: string
+        default: "regular-testing-event"
+    secrets:
+      LLM_MODEL:
+        required: true
+      LLM_ENDPOINT:
+        required: true
+      LLM_API_KEY:
+        required: true
+      LLM_API_VERSION:
+        required: true
+      EMBEDDING_MODEL:
+        required: true
+      EMBEDDING_ENDPOINT:
+        required: true
+      EMBEDDING_API_KEY:
+        required: true
+      EMBEDDING_API_VERSION:
+        required: true
+      SGAI_API_KEY:
+        required: false
+
+jobs:
+  test-scrapegraph-example:
+    name: Run ScrapeGraph Examples
+    runs-on: ubuntu-22.04
+    env:
+      ENV: 'dev'
+      SGAI_API_KEY: ${{ secrets.SGAI_API_KEY }}
+      LLM_PROVIDER: openai
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_API_VERSION: ${{ secrets.LLM_API_VERSION }}
+
+      EMBEDDING_PROVIDER: openai
+      EMBEDDING_MODEL: ${{ secrets.EMBEDDING_MODEL }}
+      EMBEDDING_ENDPOINT: ${{ secrets.EMBEDDING_ENDPOINT }}
+      EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+      EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Community Setup
+        uses: ./.github/actions/community_setup
+        with:
+          python-version: ${{ inputs.python-version }}
+          package-path: packages/task/scrapegraph_tasks
+          event-type: ${{ inputs.event-type }}
+
+      - name: Run ScrapeGraph Example
+        working-directory: ./packages/task/scrapegraph_tasks
+        run: poetry run python ./examples/example.py

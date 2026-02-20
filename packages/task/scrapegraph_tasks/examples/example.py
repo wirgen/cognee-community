@@ -2,6 +2,7 @@ import asyncio
 import os
 
 import cognee
+
 from cognee_community_tasks_scrapegraph import scrape_and_add, scrape_urls
 
 

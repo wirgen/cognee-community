@@ -1,8 +1,8 @@
 import asyncio
-import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
 from cognee_community_tasks_scrapegraph import scrape_urls
 from cognee_community_tasks_scrapegraph.scrapegraph_task import scrape_and_add
 
@@ -22,7 +22,9 @@ class TestScrapeUrls:
         mock_client = MagicMock()
         mock_client.smartscraper.return_value = {"result": {"title": "Example", "content": "Text"}}
 
-        with patch("cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client):
+        with patch(
+            "cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client
+        ):
             results = asyncio.run(
                 scrape_urls(
                     urls=["https://example.com", "https://example.org"],
@@ -40,7 +42,9 @@ class TestScrapeUrls:
         mock_client = MagicMock()
         mock_client.smartscraper.side_effect = Exception("Network error")
 
-        with patch("cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client):
+        with patch(
+            "cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client
+        ):
             results = asyncio.run(scrape_urls(urls=["https://bad-url.invalid"]))
 
         assert len(results) == 1
@@ -66,9 +70,14 @@ class TestScrapeAndAdd:
         mock_client = MagicMock()
         mock_client.smartscraper.side_effect = Exception("Network error")
 
-        with patch("cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client):
-            with pytest.raises(RuntimeError, match="No URLs were scraped successfully"):
-                asyncio.run(scrape_and_add(urls=["https://bad-url.invalid"]))
+        with (
+            patch(
+                "cognee_community_tasks_scrapegraph.scrapegraph_task.Client",
+                return_value=mock_client,
+            ),
+            pytest.raises(RuntimeError, match="No URLs were scraped successfully"),
+        ):
+            asyncio.run(scrape_and_add(urls=["https://bad-url.invalid"]))
 
     def test_calls_cognee_add_and_cognify(self):
         mock_client = MagicMock()
@@ -78,14 +87,19 @@ class TestScrapeAndAdd:
         mock_cognee.add = AsyncMock()
         mock_cognee.cognify = AsyncMock(return_value="graph_result")
 
-        with patch("cognee_community_tasks_scrapegraph.scrapegraph_task.Client", return_value=mock_client):
-            with patch("cognee_community_tasks_scrapegraph.scrapegraph_task.cognee", mock_cognee):
-                result = asyncio.run(
-                    scrape_and_add(
-                        urls=["https://example.com"],
-                        dataset_name="test_dataset",
-                    )
+        with (
+            patch(
+                "cognee_community_tasks_scrapegraph.scrapegraph_task.Client",
+                return_value=mock_client,
+            ),
+            patch("cognee_community_tasks_scrapegraph.scrapegraph_task.cognee", mock_cognee),
+        ):
+            result = asyncio.run(
+                scrape_and_add(
+                    urls=["https://example.com"],
+                    dataset_name="test_dataset",
                 )
+            )
 
         mock_cognee.add.assert_called_once()
         call_kwargs = mock_cognee.add.call_args

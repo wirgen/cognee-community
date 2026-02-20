@@ -1,6 +1,7 @@
 import os
-from typing import Any, List, Optional
+from typing import Any
 
+import cognee
 from cognee.shared.logging_utils import get_logger
 from scrapegraph_py import Client
 
@@ -8,10 +9,10 @@ logger = get_logger("ScrapegraphTask")
 
 
 async def scrape_urls(
-    urls: List[str],
+    urls: list[str],
     user_prompt: str = "Extract the main content, title, and key information from this page",
-    api_key: Optional[str] = None,
-) -> List[dict]:
+    api_key: str | None = None,
+) -> list[dict]:
     """
     Scrape web content from a list of URLs using ScrapeGraphAI.
 
@@ -56,7 +57,7 @@ async def scrape_urls(
                 )
                 logger.info(f"Successfully scraped: {url}")
             except Exception as e:
-                logger.error(f"Failed to scrape {url}: {str(e)}")
+                logger.error(f"Failed to scrape {url}: {e!s}")
                 results.append({"url": url, "content": "", "error": str(e)})
     finally:
         client.close()
@@ -65,9 +66,9 @@ async def scrape_urls(
 
 
 async def scrape_and_add(
-    urls: List[str],
+    urls: list[str],
     user_prompt: str = "Extract the main content, title, and key information from this page",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     dataset_name: str = "scrapegraph",
 ) -> Any:
     """
@@ -89,17 +90,13 @@ async def scrape_and_add(
     Any
         The cognee graph result after processing the scraped content.
     """
-    import cognee
-
     scraped = await scrape_urls(urls=urls, user_prompt=user_prompt, api_key=api_key)
 
     successful = [item for item in scraped if not item.get("error")]
     if not successful:
         raise RuntimeError("No URLs were scraped successfully.")
 
-    combined_text = "\n\n".join(
-        f"Source: {item['url']}\n{item['content']}" for item in successful
-    )
+    combined_text = "\n\n".join(f"Source: {item['url']}\n{item['content']}" for item in successful)
 
     await cognee.add(combined_text, dataset_name=dataset_name)
     result = await cognee.cognify()
