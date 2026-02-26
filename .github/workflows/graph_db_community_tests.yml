@@ -79,4 +79,12 @@ jobs:
     with:
       event-type: ${{ inputs.event-type }}
     uses: ./.github/workflows/test_falkordb.yml
-    secrets: inherit 
+    secrets: inherit
+
+  test-turingdb:
+    name: "TuringDB Community Adapter Test"
+    if: ${{ inputs.databases == 'all' || contains(inputs.databases, 'turingdb') }}
+    with:
+      event-type: ${{ inputs.event-type }}
+    uses: ./.github/workflows/test_turingdb.yml
+    secrets: inherit
