@@ -56,6 +56,7 @@ jobs:
       - name: Start TuringDB
         working-directory: ./packages/graph/turingdb
         run: |
+          touch "$HOME/.turing_history"
           poetry run turingdb &
           for i in {1..30}; do
             if nc -z localhost 6666; then
