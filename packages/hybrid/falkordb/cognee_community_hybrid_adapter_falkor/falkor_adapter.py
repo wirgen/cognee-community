@@ -100,7 +100,7 @@ class FalkorDBAdapter:
     ):
         self.driver = FalkorDB(
             host=url if url else graph_database_url,
-            port=graph_database_port,
+            port=graph_database_port if graph_database_port else 6379,
             username=graph_database_username,
             password=graph_database_password,
         )
