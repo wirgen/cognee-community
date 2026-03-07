@@ -97,7 +97,8 @@ poetry run python ./examples/example.py
 | `cognee-community-vector-adapter-weaviate`   | Vector   | Weaviate vector database adapter for cognee        |
 | `cognee-community-graph-adapter-memgraph`    | Graph    | Memgraph graph database adapter for cognee         |
 | `cognee-community-graph-adapter-networkx`    | Graph    | Networkx graph database adapter for cognee         |
-| `cognee-community-graph-adapter-turingdb`    | Graph    | TuringDB graph database adapter for cognee         |
+| `cognee-community-graph-adapter-spanner`    | Graph    | Google Cloud Spanner (Spanner Graph) adapter for cognee |
+| `cognee-community-graph-adapter-turingdb`   | Graph    | TuringDB graph database adapter for cognee         |
 | `cognee-community-hybrid-adapter-duckdb`     | Hybrid   | DuckDB hybrid database adapter for cognee          |
 | `cognee-community-hybrid-adapter-falkor`     | Hybrid   | FalkorDB hybrid database adapter for cognee        |
 
