@@ -8,7 +8,7 @@ the Cognee graph schema and property graph (see README).
 import asyncio
 import json
 import uuid
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from cognee.infrastructure.databases.exceptions.exceptions import (
@@ -47,11 +47,11 @@ class SpannerGraphAdapter(GraphDBInterface):
 
     def __init__(
         self,
-        graph_database_url: Optional[str] = None,
-        project_id: Optional[str] = None,
-        instance_id: Optional[str] = None,
-        database_id: Optional[str] = None,
-        credentials: Optional[Any] = None,
+        graph_database_url: str | None = None,
+        project_id: str | None = None,
+        instance_id: str | None = None,
+        database_id: str | None = None,
+        credentials: Any | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the Spanner client.
@@ -67,8 +67,7 @@ class SpannerGraphAdapter(GraphDBInterface):
                 self._database_id = parts[-1]
             else:
                 raise ValueError(
-                    "graph_database_url must be of the form "
-                    "project_id/instance_id/database_id"
+                    "graph_database_url must be of the form project_id/instance_id/database_id"
                 )
         elif project_id and instance_id and database_id:
             self._project_id = project_id
@@ -100,7 +99,7 @@ class SpannerGraphAdapter(GraphDBInterface):
         return self._database
 
     @staticmethod
-    def _serialize_properties(properties: Optional[dict[str, Any]]) -> dict[str, Any]:
+    def _serialize_properties(properties: dict[str, Any] | None) -> dict[str, Any]:
         if properties is None:
             return {}
         out: dict[str, Any] = {}
@@ -130,7 +129,7 @@ class SpannerGraphAdapter(GraphDBInterface):
                 return {"_raw": raw}
         return {"_raw": raw}
 
-    async def query(self, query: str, params: Optional[dict[str, Any]] = None) -> list[Any]:
+    async def query(self, query: str, params: dict[str, Any] | None = None) -> list[Any]:
         """Execute a GQL or SQL query. For GQL use 'Graph CogneeGraph MATCH ... RETURN ...'."""
         database = self._get_database()
         params = params or {}
@@ -145,7 +144,7 @@ class SpannerGraphAdapter(GraphDBInterface):
             rows = []
             for row in results:
                 vals = list(row.values()) if hasattr(row, "values") else list(row)
-                rows.append(dict(zip(keys, vals)))
+                rows.append(dict(zip(keys, vals, strict=False)))
             return rows
 
         return await _run_sync(_run)
@@ -153,7 +152,7 @@ class SpannerGraphAdapter(GraphDBInterface):
     async def add_node(
         self,
         node: DataPoint | str,
-        properties: Optional[dict[str, Any]] = None,
+        properties: dict[str, Any] | None = None,
     ) -> None:
         if isinstance(node, DataPoint):
             node_id = str(node.id)
@@ -259,10 +258,10 @@ class SpannerGraphAdapter(GraphDBInterface):
         for nid in node_ids:
             await self.delete_node(nid)
 
-    async def get_node(self, node_id: str) -> Optional[dict[str, Any]]:
+    async def get_node(self, node_id: str) -> dict[str, Any] | None:
         database = self._get_database()
 
-        def _run() -> Optional[dict[str, Any]]:
+        def _run() -> dict[str, Any] | None:
             with database.snapshot() as snapshot:
                 results = list(
                     snapshot.execute_sql(
@@ -297,7 +296,7 @@ class SpannerGraphAdapter(GraphDBInterface):
         source_id: str,
         target_id: str,
         relationship_name: str,
-        properties: Optional[dict[str, Any]] = None,
+        properties: dict[str, Any] | None = None,
     ) -> None:
         edge_id = str(uuid.uuid4())
         props = dict(properties or {})
@@ -348,7 +347,12 @@ class SpannerGraphAdapter(GraphDBInterface):
         def _run() -> None:
             def _tx(transaction: Any) -> None:
                 for edge in edges:
-                    src, tgt, rel, props = edge[0], edge[1], edge[2], edge[3] if len(edge) > 3 else None
+                    src, tgt, rel, props = (
+                        edge[0],
+                        edge[1],
+                        edge[2],
+                        edge[3] if len(edge) > 3 else None,
+                    )
                     edge_id = str(uuid.uuid4())
                     p = dict(props or {})
                     p["source_node_id"] = str(src)
@@ -404,11 +408,7 @@ class SpannerGraphAdapter(GraphDBInterface):
 
         def _run_nodes() -> list[tuple[str, dict[str, Any]]]:
             with database.snapshot() as snapshot:
-                results = list(
-                    snapshot.execute_sql(
-                        f"SELECT id, properties FROM {NODE_TABLE}"
-                    )
-                )
+                results = list(snapshot.execute_sql(f"SELECT id, properties FROM {NODE_TABLE}"))
             nodes: list[tuple[str, dict[str, Any]]] = []
             for row in results:
                 nid = row[0] if hasattr(row, "__getitem__") else getattr(row, "id", None)
@@ -434,7 +434,9 @@ class SpannerGraphAdapter(GraphDBInterface):
             for row in results:
                 src = row[0] if hasattr(row, "__getitem__") else getattr(row, "source_id", None)
                 tgt = row[1] if hasattr(row, "__getitem__") else getattr(row, "target_id", None)
-                rel = row[2] if hasattr(row, "__getitem__") else getattr(row, "relationship_type", "")
+                rel = (
+                    row[2] if hasattr(row, "__getitem__") else getattr(row, "relationship_type", "")
+                )
                 props = self._parse_json_properties(
                     row[3] if hasattr(row, "__getitem__") else getattr(row, "properties", None)
                 )
@@ -453,11 +455,7 @@ class SpannerGraphAdapter(GraphDBInterface):
 
         def _run() -> bool:
             with database.snapshot() as snapshot:
-                results = list(
-                    snapshot.execute_sql(
-                        f"SELECT 1 FROM {NODE_TABLE} LIMIT 1"
-                    )
-                )
+                results = list(snapshot.execute_sql(f"SELECT 1 FROM {NODE_TABLE} LIMIT 1"))
             return len(results) == 0
 
         return await _run_sync(_run)
@@ -478,7 +476,9 @@ class SpannerGraphAdapter(GraphDBInterface):
         filters = attribute_filters[0]
         filtered_ids: set[str] = set()
         for nid, props in nodes:
-            if all(str(props.get(attr)) in [str(v) for v in values] for attr, values in filters.items()):
+            if all(
+                str(props.get(attr)) in [str(v) for v in values] for attr, values in filters.items()
+            ):
                 filtered_ids.add(str(nid))
         filtered_nodes = [(nid, p) for nid, p in nodes if str(nid) in filtered_ids]
         filtered_edges = [
@@ -493,9 +493,7 @@ class SpannerGraphAdapter(GraphDBInterface):
         num_nodes = len(nodes)
         num_edges = len(edges)
         mean_degree = (2 * num_edges) / num_nodes if num_nodes > 0 else 0.0
-        edge_density = (
-            num_edges / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0.0
-        )
+        edge_density = num_edges / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0.0
         # Connected components (undirected)
         adj: dict[str, set[str]] = {}
         for nid, _ in nodes:
@@ -540,9 +538,7 @@ class SpannerGraphAdapter(GraphDBInterface):
             metrics["avg_clustering"] = -1
         return metrics
 
-    async def has_edge(
-        self, source_id: str, target_id: str, relationship_name: str
-    ) -> bool:
+    async def has_edge(self, source_id: str, target_id: str, relationship_name: str) -> bool:
         database = self._get_database()
 
         def _run() -> bool:
@@ -602,7 +598,9 @@ class SpannerGraphAdapter(GraphDBInterface):
             for row in results:
                 src = row[0] if hasattr(row, "__getitem__") else getattr(row, "source_id", None)
                 tgt = row[1] if hasattr(row, "__getitem__") else getattr(row, "target_id", None)
-                rel = row[2] if hasattr(row, "__getitem__") else getattr(row, "relationship_type", "")
+                rel = (
+                    row[2] if hasattr(row, "__getitem__") else getattr(row, "relationship_type", "")
+                )
                 props = self._parse_json_properties(
                     row[3] if hasattr(row, "__getitem__") else getattr(row, "properties", None)
                 )
@@ -643,7 +641,5 @@ class SpannerGraphAdapter(GraphDBInterface):
             other = await self.get_node(other_id)
             if other is None:
                 continue
-            connections.append(
-                (node, {"relationship_name": rel, **rel_props}, other)
-            )
+            connections.append((node, {"relationship_name": rel, **rel_props}, other))
         return connections

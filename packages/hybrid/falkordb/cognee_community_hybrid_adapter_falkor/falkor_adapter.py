@@ -1,24 +1,13 @@
 import asyncio
 import json
 from textwrap import dedent
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID
-
-from cognee.infrastructure.databases.vector.exceptions import CollectionNotFoundError
-from cognee.infrastructure.databases.vector.models.ScoredResult import ScoredResult
-from cognee.infrastructure.engine.utils import parse_id
-
-if TYPE_CHECKING:
-    from cognee.infrastructure.databases.graph.graph_db_interface import (
-        GraphDBInterface,
-    )
-    from cognee.infrastructure.databases.vector.vector_db_interface import (
-        VectorDBInterface,
-    )
 
 from cognee.infrastructure.databases.exceptions import MissingQueryParameterError
 from cognee.infrastructure.databases.graph.graph_db_interface import (
     EdgeData,
+    GraphDBInterface,
     Node,
     NodeData,
 )
@@ -26,7 +15,13 @@ from cognee.infrastructure.databases.vector.embeddings import get_embedding_engi
 from cognee.infrastructure.databases.vector.embeddings.EmbeddingEngine import (
     EmbeddingEngine,
 )
+from cognee.infrastructure.databases.vector.exceptions import CollectionNotFoundError
+from cognee.infrastructure.databases.vector.models.ScoredResult import ScoredResult
+from cognee.infrastructure.databases.vector.vector_db_interface import (
+    VectorDBInterface,
+)
 from cognee.infrastructure.engine import DataPoint
+from cognee.infrastructure.engine.utils import parse_id
 
 from falkordb.falkordb import FalkorDB
 from falkordb.graph import Graph, QueryResult
@@ -45,7 +40,7 @@ class IndexSchema(DataPoint):
     metadata: dict = {"index_fields": ["text"]}
 
 
-class FalkorDBAdapter:
+class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
     """
     Manage and interact with a graph database using vector embeddings.
 
@@ -337,7 +332,7 @@ class FalkorDBAdapter:
         ).strip()
 
     # TODO: Check if this is needed, or if collections are created automatically
-    async def create_collection(self, collection_name: str) -> None:
+    async def create_collection(self, collection_name: str, payload_schema: Optional[Any] = None):
         """
         Create a collection in the graph database with the specified name.
 
@@ -366,7 +361,7 @@ class FalkorDBAdapter:
 
         return collection_name in collections
 
-    async def create_data_points(self, data_points: list[DataPoint]) -> None:
+    async def create_data_points(self, collection_name: str, data_points: list[DataPoint]):
         """
         Add a list of data points to the graph database via batching.
 
@@ -448,9 +443,6 @@ class FalkorDBAdapter:
             - bool: Returns true if the vector index exists, otherwise false.
         """
         indices = graph.list_indices()
-        for index in indices.result_set:
-            if index[0] == index_name:
-                continue
 
         return any(
             [
@@ -477,7 +469,9 @@ class FalkorDBAdapter:
         """
         pass
 
-    async def add_node(self, node_id: str, properties: dict[str, Any]) -> None:
+    async def add_node(
+        self, node: Union[DataPoint, str], properties: Optional[Dict[str, Any]] = None
+    ) -> None:
         """
         Add a single node with specified properties to the graph.
 
@@ -487,6 +481,7 @@ class FalkorDBAdapter:
             - node_id (str): Unique identifier for the node being added.
             - properties (Dict[str, Any]): A dictionary of properties associated with the node.
         """
+        node_id = str(node.id)
         # Clean the properties - remove None values and handle special types
         clean_properties = {"id": node_id}
         for key, value in properties.items():
@@ -518,7 +513,7 @@ class FalkorDBAdapter:
 
             - node (DataPoint): An instance of DataPoint to be added to the graph.
         """
-        await self.create_data_points([node])
+        await self.create_data_points("", [node])
 
     async def add_data_point_nodes(self, nodes: list[DataPoint]) -> None:
         """
@@ -529,7 +524,7 @@ class FalkorDBAdapter:
 
             - nodes (list[DataPoint]): A list of DataPoint instances to be added to the graph.
         """
-        await self.create_data_points(nodes)
+        await self.create_data_points("", nodes)
 
     async def add_nodes(self, nodes: list[Node] | list[DataPoint]) -> None:
         """
@@ -545,7 +540,7 @@ class FalkorDBAdapter:
             if isinstance(node, tuple) and len(node) == 2:
                 # Node is in (node_id, properties) format
                 node_id, properties = node
-                await self.add_node(node_id, properties)
+                await self.add_node(node, properties)
             elif hasattr(node, "id") and hasattr(node, "model_dump"):
                 # Node is a DataPoint object
                 # TODO: Figure out how to get this data if node is of type Node, not DataPoint
@@ -573,7 +568,7 @@ class FalkorDBAdapter:
                     ),
                 }
 
-                await self.add_node(str(node.id), properties)
+                await self.add_node(node, properties)
             else:
                 raise ValueError(
                     f"Invalid node format: {node}. Expected tuple (node_id, properties)"
@@ -648,7 +643,7 @@ class FalkorDBAdapter:
                 existing_edges.append(edge)
         return existing_edges
 
-    async def retrieve(self, data_point_ids: list[UUID]) -> list:
+    async def retrieve(self, collection_name: str, data_point_ids: list[str]):
         """
         Retrieve data points from the graph based on their IDs.
 
@@ -664,7 +659,7 @@ class FalkorDBAdapter:
             Returns the result set containing the retrieved nodes or an empty list if not found.
         """
         result = await self.query(
-            "MATCH (node) WHERE node.name IN $node_ids RETURN node",
+            "MATCH (node) WHERE node.id IN $node_ids RETURN node",
             {
                 "node_ids": [str(data_point) for data_point in data_point_ids],
             },
@@ -911,7 +906,9 @@ class FalkorDBAdapter:
         )
         return results
 
-    async def get_graph_data(self) -> tuple:
+    async def get_graph_data(
+        self,
+    ) -> Tuple[List[Tuple[str, Dict[str, Any]]], List[Tuple[str, str, str, Dict[str, Any]]]]:
         """
         Retrieve all nodes and edges from the graph along with their properties.
 
@@ -1216,7 +1213,7 @@ class FalkorDBAdapter:
                COLLECT(DISTINCT et) AS orphan_types
         """
 
-        result = await self.query(query, {"content_hash": f"text_{content_hash}"})
+        result = await self.query(query, {"content_hash": f"{content_hash}"})
 
         if not result.result_set or not result.result_set[0]:
             return {}
@@ -1339,6 +1336,84 @@ class FalkorDBAdapter:
                         record[3],  # properties
                     )
                 )
+
+        return nodes, edges
+
+    async def get_filtered_graph_data(
+        self, attribute_filters: list[dict[str, list[str | int]]]
+    ) -> tuple[list[tuple[str, dict]], list[tuple[str, str, str, dict]]]:
+        """
+        Fetch nodes and edges filtered by attribute criteria.
+
+        Returns:
+            (
+                [(node_id, node_properties), ...],
+                [(source_id, target_id, relationship_type, edge_properties), ...]
+            )
+        """
+        # If no filters were provided, return full graph
+        if not attribute_filters:
+            return await self.get_graph_data()
+
+        where_clauses_n: list[str] = []
+        where_clauses_m: list[str] = []
+        params: dict[str, list[str | int]] = {}
+
+        # Build parameterized IN predicates (safe and consistent with other adapters)
+        for i, filter_dict in enumerate(attribute_filters):
+            for attr, values in filter_dict.items():
+                if not values:
+                    continue
+
+                param_name = f"values_{i}_{attr}"
+                normalized_values = [str(v) if isinstance(v, UUID) else v for v in values]
+
+                where_clauses_n.append(f"n.{attr} IN ${param_name}")
+                where_clauses_m.append(f"m.{attr} IN ${param_name}")
+                params[param_name] = normalized_values
+
+        # If filters resolved to nothing (e.g. only empty lists), return full graph
+        if not where_clauses_n:
+            return await self.get_graph_data()
+
+        node_where_clause = " AND ".join(where_clauses_n)
+        edge_where_clause = f"{' AND '.join(where_clauses_n)} AND {' AND '.join(where_clauses_m)}"
+
+        query_nodes = f"""
+        MATCH (n)
+        WHERE {node_where_clause}
+        RETURN n.id AS id, properties(n) AS properties
+        """
+
+        query_edges = f"""
+        MATCH (n)-[r]->(m)
+        WHERE {edge_where_clause}
+        RETURN n.id AS source, m.id AS target, TYPE(r) AS type, properties(r) AS properties
+        """
+
+        result_nodes, result_edges = await asyncio.gather(
+            self.query(query_nodes, params),
+            self.query(query_edges, params),
+        )
+
+        nodes: list[tuple[str, dict]] = []
+        for record in result_nodes.result_set or []:
+            node_id = str(record[0])
+            node_properties = record[1] if isinstance(record[1], dict) else {}
+            nodes.append((node_id, node_properties))
+
+        edges: list[tuple[str, str, str, dict]] = []
+        for record in result_edges.result_set or []:
+            source_id = str(record[0])
+            target_id = str(record[1])
+            rel_type = str(record[2])
+            properties = record[3] if isinstance(record[3], dict) else {}
+
+            # Keep compatibility with adapters that prefer explicit source/target in edge props
+            source_id = str(properties.get("source_node_id", source_id))
+            target_id = str(properties.get("target_node_id", target_id))
+
+            edges.append((source_id, target_id, rel_type, properties))
 
         return nodes, edges
 

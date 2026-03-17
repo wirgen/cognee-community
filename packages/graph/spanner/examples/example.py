@@ -30,8 +30,7 @@ async def main() -> None:
     sample_data = [
         "Artificial intelligence is a branch of computer science that aims to "
         "create intelligent machines.",
-        "Machine learning is a subset of AI that focuses on algorithms that "
-        "can learn from data.",
+        "Machine learning is a subset of AI that focuses on algorithms that can learn from data.",
         "Deep learning uses neural networks with many layers.",
     ]
 

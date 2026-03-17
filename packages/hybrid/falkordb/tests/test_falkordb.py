@@ -30,24 +30,6 @@ async def check_falkordb_connection():
 
 
 async def test_vector_engine_search_none_limit():
-    file_path_quantum = os.path.join(
-        pathlib.Path(__file__).parent.parent.parent.parent, "test_data/Quantum_computers.txt"
-    )
-
-    file_path_nlp = os.path.join(
-        pathlib.Path(__file__).parent.parent.parent.parent,
-        "test_data/Natural_language_processing.txt",
-    )
-
-    await cognee.prune.prune_data()
-    await cognee.prune.prune_system(metadata=True)
-
-    await cognee.add(file_path_quantum)
-
-    await cognee.add(file_path_nlp)
-
-    await cognee.cognify()
-
     query_text = "Tell me about Quantum computers"
 
     from cognee.infrastructure.databases.vector import get_vector_engine
@@ -140,6 +122,12 @@ async def main():
 
     await cognee.add([text], dataset_name)
 
+    file_path_quantum = os.path.join(
+        pathlib.Path(__file__).parent.parent.parent.parent, "test_data/Quantum_computers.txt"
+    )
+
+    await cognee.add([file_path_quantum], dataset_name)
+
     await cognee.cognify([dataset_name])
 
     from cognee.infrastructure.databases.vector import get_vector_engine
@@ -178,6 +166,8 @@ async def main():
     history = await get_history(user.id)
 
     assert len(history) == 6, "Search history is not correct."
+
+    await test_vector_engine_search_none_limit()
 
     # Assert local data files are cleaned properly
     await cognee.prune.prune_data()
@@ -220,8 +210,6 @@ async def main():
     graph_data = await graph_engine.get_graph_data()
     nodes, edges = graph_data
     assert len(nodes) == 0 and len(edges) == 0, "FalkorDB graph database is not empty"
-
-    await test_vector_engine_search_none_limit()
 
     print("🎉 FalkorDB test completed successfully!")
     print("   ✓ Data ingestion worked")

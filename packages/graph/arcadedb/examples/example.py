@@ -36,12 +36,9 @@ async def main():
     sample_data = [
         "Artificial intelligence is a branch of computer science that aims to"
         " create intelligent machines.",
-        "Machine learning is a subset of AI that focuses on algorithms that can"
-        " learn from data.",
-        "Deep learning is a subset of machine learning that uses neural networks"
-        " with many layers.",
-        "Natural language processing enables computers to understand and process"
-        " human language.",
+        "Machine learning is a subset of AI that focuses on algorithms that can learn from data.",
+        "Deep learning is a subset of machine learning that uses neural networks with many layers.",
+        "Natural language processing enables computers to understand and process human language.",
         "Computer vision allows machines to interpret and make decisions"
         " based on visual information.",
     ]

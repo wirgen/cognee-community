@@ -3,11 +3,11 @@
 These tests verify that query() conforms to Cognee's GraphDBInterface
 contract (async def query()) without requiring a running FalkorDB server.
 """
+
 import inspect
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from cognee_community_hybrid_adapter_falkor.falkor_adapter import FalkorDBAdapter
 
 

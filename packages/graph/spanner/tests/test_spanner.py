@@ -4,12 +4,10 @@ Unit tests use mocks so no real Spanner instance is required.
 Integration tests (when SPANNER_DATABASE env is set) run against a live database.
 """
 
-import json
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 import pytest
-
 from cognee.infrastructure.engine import DataPoint
 
 from cognee_community_graph_adapter_spanner import SpannerGraphAdapter
@@ -44,9 +42,7 @@ def mock_database():
 
         def execute_update(sql, params=None, param_types=None):
             params = params or {}
-            if "INSERT INTO CogneeNode" in sql:
-                state["nodes"][params["id"]] = params.get("properties", "{}")
-            elif "UPDATE CogneeNode" in sql:
+            if "INSERT INTO CogneeNode" in sql or "UPDATE CogneeNode" in sql:
                 state["nodes"][params["id"]] = params.get("properties", "{}")
             elif "DELETE FROM CogneeEdge" in sql and "WHERE source_id" not in sql:
                 state["edges"] = []
@@ -55,7 +51,8 @@ def mock_database():
                 if nid:
                     state["nodes"].pop(nid, None)
                     state["edges"] = [
-                        e for e in state["edges"]
+                        e
+                        for e in state["edges"]
                         if e.get("source_id") != nid and e.get("target_id") != nid
                     ]
             elif "INSERT INTO CogneeEdge" in sql:
@@ -94,7 +91,11 @@ def mock_database():
                 tgt = params.get("target_id")
                 rel = params.get("rel") or params.get("relationship_type")
                 for e in state["edges"]:
-                    if e["source_id"] == src and e["target_id"] == tgt and e["relationship_type"] == rel:
+                    if (
+                        e["source_id"] == src
+                        and e["target_id"] == tgt
+                        and e["relationship_type"] == rel
+                    ):
                         return [_make_row([1], [1])]
                 return []
             if "FROM CogneeEdge" in sql and "WHERE source_id = @id OR target_id = @id" in sql:

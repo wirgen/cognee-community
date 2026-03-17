@@ -432,10 +432,7 @@ class ArcadeDBAdapter(GraphDBInterface):
         query = "MATCH (n) RETURN n.id AS id, labels(n) AS labels, properties(n) AS properties"
         result = await self.query(query)
 
-        nodes = [
-            (record["id"], record["properties"])
-            for record in result
-        ]
+        nodes = [(record["id"], record["properties"]) for record in result]
 
         query = """
         MATCH (n)-[r]->(m)
@@ -471,10 +468,7 @@ class ArcadeDBAdapter(GraphDBInterface):
         """
         result_nodes = await self.query(query_nodes)
 
-        nodes = [
-            (record["id"], record["properties"])
-            for record in result_nodes
-        ]
+        nodes = [(record["id"], record["properties"]) for record in result_nodes]
 
         query_edges = f"""
         MATCH (n)-[r]->(m)
@@ -536,9 +530,7 @@ class ArcadeDBAdapter(GraphDBInterface):
                 "num_nodes": num_nodes,
                 "num_edges": num_edges,
                 "mean_degree": (2 * num_edges) / num_nodes if num_nodes > 0 else 0,
-                "edge_density": num_edges / (num_nodes * (num_nodes - 1))
-                if num_nodes > 1
-                else 0,
+                "edge_density": num_edges / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0,
             }
 
             # Connected components via simple BFS approach
