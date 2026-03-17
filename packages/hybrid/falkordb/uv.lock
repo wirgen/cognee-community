@@ -544,7 +544,7 @@ wheels = [
 
 [[package]]
 name = "cognee-community-hybrid-adapter-falkor"
-version = "0.2.2"
+version = "0.2.3"
 source = { virtual = "." }
 dependencies = [
     { name = "cognee" },
