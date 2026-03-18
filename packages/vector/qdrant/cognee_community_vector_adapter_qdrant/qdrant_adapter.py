@@ -20,6 +20,7 @@ class IndexSchema(DataPoint):
     text: str
 
     metadata: dict = {"index_fields": ["text"]}
+    belongs_to_set: List[str] = []
 
 
 def create_hnsw_config(hnsw_config: dict):
@@ -163,6 +164,7 @@ class QDrantAdapter(VectorDBInterface):
                 IndexSchema(
                     id=data_point.id,
                     text=getattr(data_point, data_point.metadata["index_fields"][0]),
+                    belongs_to_set=(data_point.belongs_to_set or []),
                 )
                 for data_point in data_points
             ],
@@ -183,6 +185,7 @@ class QDrantAdapter(VectorDBInterface):
         with_vector: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list[ScoredResult]:
         if query_text is None and query_vector is None:
             raise MissingQueryParameterError()
@@ -203,21 +206,39 @@ class QDrantAdapter(VectorDBInterface):
                 await client.close()
                 return []
 
+            filters = [
+                models.FieldCondition(
+                    key="database_name",
+                    match=models.MatchValue(
+                        value=self.database_name,
+                    ),
+                )
+            ]
+
+            if node_name:
+                if node_name_filter_operator == "AND":
+                    must_conditions = [
+                        models.FieldCondition(
+                            key="belongs_to_set",
+                            match=models.MatchAny(any=[name]),
+                        )
+                        for name in node_name
+                    ]
+
+                    filters.extend(must_conditions)
+                else:
+                    filters.append(
+                        models.FieldCondition(
+                            key="belongs_to_set", match=models.MatchAny(any=node_name)
+                        )
+                    )
+
             # Use query_points instead of search (API change in qdrant-client)
             # query_points is the correct method for AsyncQdrantClient
             query_result = await client.query_points(
                 collection_name=collection_name,
                 query=query_vector,
-                query_filter=models.Filter(
-                    must=[
-                        models.FieldCondition(
-                            key="database_name",
-                            match=models.MatchValue(
-                                value=self.database_name,
-                            ),
-                        )
-                    ]
-                ),
+                query_filter=models.Filter(must=filters),
                 using="text",
                 limit=limit,
                 with_vectors=with_vector,
