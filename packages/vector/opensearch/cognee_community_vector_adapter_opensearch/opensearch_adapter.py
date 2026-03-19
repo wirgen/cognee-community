@@ -288,7 +288,8 @@ class OpenSearchAdapter(VectorDBInterface):
         limit: int | None = 15,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> list[ScoredResult]:
         """
         Search for similar data points in a collection using a query text or vector.
@@ -352,6 +353,7 @@ class OpenSearchAdapter(VectorDBInterface):
         with_vectors: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ):
         """
         Perform a batch search for multiple query texts.
@@ -376,6 +378,8 @@ class OpenSearchAdapter(VectorDBInterface):
                 limit=limit,
                 with_vector=with_vectors,
                 include_payload=include_payload,
+                node_name=node_name,
+                node_name_filter_operator=node_name_filter_operator,
             )
             for vector in vectors
         ]

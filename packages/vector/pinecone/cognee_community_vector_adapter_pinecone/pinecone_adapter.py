@@ -195,7 +195,8 @@ class PineconeAdapter(VectorDBInterface):
         limit: int = 15,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> list[ScoredResult]:
         """Search for similar vectors in the collection.
 
@@ -270,6 +271,7 @@ class PineconeAdapter(VectorDBInterface):
         with_vectors: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list[list[ScoredResult]]:
         """Perform batch search for multiple queries.
 
@@ -308,6 +310,8 @@ class PineconeAdapter(VectorDBInterface):
                         top_k=limit,
                         include_metadata=include_payload,
                         include_values=with_vectors,
+                        node_name=node_name,
+                        node_name_filter_operator=node_name_filter_operator,
                     )
 
                     # Convert to ScoredResult objects (no filtering to match other adapters)

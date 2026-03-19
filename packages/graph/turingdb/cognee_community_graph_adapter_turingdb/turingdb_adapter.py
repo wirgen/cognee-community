@@ -644,7 +644,10 @@ class TuringDBAdapter(GraphDBInterface):
         return neighbors
 
     async def get_nodeset_subgraph(
-        self, node_type: Type[Any], node_name: List[str]
+        self,
+        node_type: Type[Any],
+        node_name: List[str],
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> Tuple[List[Tuple[int, dict]], List[Tuple[int, int, str, dict]]]:
         if not node_name or await self.is_empty():
             return [], []

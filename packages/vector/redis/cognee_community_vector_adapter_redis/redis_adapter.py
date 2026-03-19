@@ -147,7 +147,7 @@ class RedisAdapter(VectorDBInterface):
                         "datatype": "float32",
                     },
                 },
-                {"name": "payload_data", "type": "text", "attrs": {"sortable": True}},
+                {"name": "belongs_to_set", "type": "tag", "path": "$.payload.belongs_to_set[*]"},
             ],
         }
         return IndexSchema.from_dict(schema_dict)
@@ -248,7 +248,7 @@ class RedisAdapter(VectorDBInterface):
                         "",
                     ),
                     "vector": embedding,
-                    "payload_data": json.dumps(payload),  # Store as JSON string
+                    "payload_data": payload,  # Store as JSON string
                 }
                 documents.append(doc_data)
 
@@ -311,13 +311,13 @@ class RedisAdapter(VectorDBInterface):
                 doc = await index.fetch(data_id)
                 if doc:
                     # Parse the stored payload JSON
-                    payload_str = doc.get("payload_data", "{}")
-                    try:
-                        payload = json.loads(payload_str)
-                        results.append(payload)
-                    except json.JSONDecodeError:
-                        # Fallback to the document itself if payload parsing fails
-                        results.append(doc)
+                    payload_data = doc.get("payload_data", {})
+                    if isinstance(payload_data, str):
+                        try:
+                            payload_data = json.loads(payload_data)
+                        except json.JSONDecodeError:
+                            pass
+                    results.append(payload_data if isinstance(payload_data, dict) else doc)
 
             return results
 
@@ -332,8 +332,9 @@ class RedisAdapter(VectorDBInterface):
         query_vector: list[float] | None = None,
         limit: int | None = 15,
         with_vector: bool = False,
-        include_payload: bool = True,
-        node_name: Optional[List[str]] = None,
+        include_payload: bool = False,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> list[ScoredResult]:
         """Search for similar vectors in the collection.
 
@@ -370,6 +371,18 @@ class RedisAdapter(VectorDBInterface):
         if limit <= 0:
             return []
 
+        filter_expr = None
+        if node_name:
+            from functools import reduce
+            from operator import and_, or_
+
+            from redisvl.query.filter import Tag
+
+            if node_name_filter_operator == "AND":
+                filter_expr = reduce(and_, (Tag("belongs_to_set") == name for name in node_name))
+            else:
+                filter_expr = reduce(or_, (Tag("belongs_to_set") == name for name in node_name))
+
         try:
             # Get the query vector
             if query_vector is None:
@@ -379,6 +392,7 @@ class RedisAdapter(VectorDBInterface):
             vector_query = VectorQuery(
                 vector=query_vector,
                 vector_field_name="vector",
+                filter_expression=filter_expr,
                 num_results=limit,
                 return_score=True,
                 normalize_vector_distance=False,
@@ -400,11 +414,13 @@ class RedisAdapter(VectorDBInterface):
             scored_results = []
             for doc in results:
                 # Parse the stored payload - it's stored as JSON string
-                payload_str = doc.get("payload_data", "{}")
-                try:
-                    payload = json.loads(payload_str)
-                except json.JSONDecodeError:
-                    payload = doc
+                payload_data = doc.get("payload_data", {})
+                if isinstance(payload_data, str):
+                    try:
+                        payload_data = json.loads(payload_data)
+                    except json.JSONDecodeError:
+                        payload_data = doc
+                payload = payload_data if isinstance(payload_data, dict) else doc
 
                 scored_results.append(
                     ScoredResult(
@@ -427,6 +443,7 @@ class RedisAdapter(VectorDBInterface):
         with_vectors: bool = False,
         include_payload: bool = True,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list[list[ScoredResult]]:
         """Perform batch search for multiple queries.
 
@@ -452,6 +469,8 @@ class RedisAdapter(VectorDBInterface):
                 limit=limit,
                 with_vector=with_vectors,
                 include_payload=include_payload,
+                node_name=node_name,
+                node_name_filter_operator=node_name_filter_operator,
             )
             for vector in vectors
         ]

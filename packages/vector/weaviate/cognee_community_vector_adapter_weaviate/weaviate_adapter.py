@@ -393,7 +393,8 @@ class WeaviateAdapter(VectorDBInterface):
         limit: int | None = 15,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ):
         """
         Perform a search on a collection using either a text query or a vector query.
@@ -475,6 +476,7 @@ class WeaviateAdapter(VectorDBInterface):
         with_vectors: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ):
         """
         Execute a batch search for multiple query texts in the specified collection.
@@ -520,6 +522,8 @@ class WeaviateAdapter(VectorDBInterface):
                 limit=limit,
                 with_vector=with_vectors,
                 include_payload=include_payload,
+                node_name=node_name,
+                node_name_filter_operator=node_name_filter_operator,
             )
 
         return [

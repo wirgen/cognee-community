@@ -767,14 +767,14 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "cognee"
-version = "0.5.3"
+version = "0.5.5"
 description = "Cognee - is a library for enriching LLM context with a semantic layer for better understanding and reasoning."
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "cognee-0.5.3-py3-none-any.whl", hash = "sha256:9fffc56b985e28e7069e06380ed3b344d51e963b25e01dd0140627501e2f2cb7"},
-    {file = "cognee-0.5.3.tar.gz", hash = "sha256:9ee78095607267c40758e65522514bac47a884d4ea3e920018298b95c879db21"},
+    {file = "cognee-0.5.5-py3-none-any.whl", hash = "sha256:ba8f5f0d9f69336966f412f0dfa85a717cdd100a78d6733316efd65effb7f9a3"},
+    {file = "cognee-0.5.5.tar.gz", hash = "sha256:777408a9dfed35eea9c9a39915eb736863f16557c33c2a4357789255cf1b5e8c"},
 ]
 
 [package.dependencies]
@@ -799,7 +799,6 @@ lancedb = ">=0.24.0,<1.0.0"
 langdetect = ">=1.0.9"
 limits = ">=4.4.1,<5"
 litellm = ">=1.76.0"
-mistralai = ">=1.9.10"
 nbformat = ">=5.7.0,<6.0.0"
 networkx = ">=3.4.2,<4"
 numpy = ">=1.26.4,<=4.0.0"
@@ -843,8 +842,8 @@ huggingface = ["transformers (>=4.46.3,<5)"]
 langchain = ["langchain-core (>=1.2.5)", "langchain-text-splitters (>=0.3.2,<1.0.0)", "langsmith (>=0.2.3,<1.0.0)"]
 llama-cpp = ["llama-cpp-python[server] (>=0.3.0,<1.0.0)"]
 llama-index = ["llama-index-core (>=0.13.0,<0.14)"]
-mistral = ["mistral-common (>=1.5.2,<2)"]
-monitoring = ["langfuse (>=2.32.0,<3)", "sentry-sdk[fastapi] (>=2.9.0,<3)"]
+mistral = ["mistral-common (>=1.5.2,<2)", "mistralai (>=1.9.10,<2)"]
+monitoring = ["langfuse (>=2.32.0,<3)", "opentelemetry-api (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-grpc (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0,<2)", "opentelemetry-sdk (>=1.20.0,<2)", "sentry-sdk[fastapi] (>=2.9.0,<3)"]
 neo4j = ["neo4j (>=5.28.0,<6)"]
 neptune = ["langchain-aws (>=0.2.22)"]
 notebook = ["notebook (>=7.1.0,<8)"]
@@ -854,6 +853,7 @@ postgres-binary = ["asyncpg (>=0.30.0,<1.0.0)", "pgvector (>=0.3.5,<0.4)", "psyc
 posthog = ["posthog (>=3.5.0,<4)"]
 redis = ["redis (>=5.0.3,<6.0.0)"]
 scraping = ["apscheduler (>=3.10.0,<=3.11.0)", "beautifulsoup4 (>=4.13.1)", "lxml (>=4.9.3,<5) ; python_version < \"3.13\"", "lxml (>=5,<6) ; python_version >= \"3.13\"", "playwright (>=1.9.0)", "protego (>=0.1)", "tavily-python (>=0.7.12)"]
+tracing = ["opentelemetry-api (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-grpc (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0,<2)", "opentelemetry-sdk (>=1.20.0,<2)"]
 
 [[package]]
 name = "colorama"
@@ -1084,21 +1084,6 @@ files = [
 [package.dependencies]
 dnspython = ">=2.0.0"
 idna = ">=2.0.0"
-
-[[package]]
-name = "eval-type-backport"
-version = "0.2.2"
-description = "Like `typing._eval_type`, but lets older Python versions use newer typing features."
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "eval_type_backport-0.2.2-py3-none-any.whl", hash = "sha256:cb6ad7c393517f476f96d456d0412ea80f0a8cf96f6892834cd9340149111b0a"},
-    {file = "eval_type_backport-0.2.2.tar.gz", hash = "sha256:f0576b4cf01ebb5bd358d02314d31846af5e07678387486e2c798af0e7d849c1"},
-]
-
-[package.extras]
-tests = ["pytest"]
 
 [[package]]
 name = "fakeredis"
@@ -1872,18 +1857,6 @@ writer = ["writer-sdk (>=2.2.0,<3.0.0)"]
 xai = ["python-dotenv (>=1.0.0)", "xai-sdk (>=0.2.0) ; python_version >= \"3.10\""]
 
 [[package]]
-name = "invoke"
-version = "2.2.1"
-description = "Pythonic task execution"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "invoke-2.2.1-py3-none-any.whl", hash = "sha256:2413bc441b376e5cd3f55bb5d364f973ad8bdd7bf87e53c79de3c11bf3feecc8"},
-    {file = "invoke-2.2.1.tar.gz", hash = "sha256:515bf49b4a48932b79b024590348da22f39c4942dff991ad1fb8b8baea1be707"},
-]
-
-[[package]]
 name = "isort"
 version = "7.0.0"
 description = "A Python utility / library to sort Python imports."
@@ -2480,31 +2453,6 @@ files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
-
-[[package]]
-name = "mistralai"
-version = "1.9.11"
-description = "Python Client SDK for the Mistral AI API."
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "mistralai-1.9.11-py3-none-any.whl", hash = "sha256:7a3dc2b8ef3fceaa3582220234261b5c4e3e03a972563b07afa150e44a25a6d3"},
-    {file = "mistralai-1.9.11.tar.gz", hash = "sha256:3df9e403c31a756ec79e78df25ee73cea3eb15f86693773e16b16adaf59c9b8a"},
-]
-
-[package.dependencies]
-eval-type-backport = ">=0.2.0"
-httpx = ">=0.28.1"
-invoke = ">=2.2.0,<3.0.0"
-pydantic = ">=2.10.3"
-python-dateutil = ">=2.8.2"
-pyyaml = ">=6.0.2,<7.0.0"
-typing-inspection = ">=0.4.0"
-
-[package.extras]
-agents = ["authlib (>=1.5.2,<2.0)", "griffe (>=1.7.3,<2.0)", "mcp (>=1.0,<2.0) ; python_version >= \"3.10\""]
-gcp = ["google-auth (>=2.27.0)", "requests (>=2.32.3)"]
 
 [[package]]
 name = "mmh3"
@@ -3723,21 +3671,6 @@ files = [
 
 [package.extras]
 dev = ["build", "flake8", "mypy", "pytest", "twine"]
-
-[[package]]
-name = "python-dateutil"
-version = "2.9.0.post0"
-description = "Extensions to the standard Python datetime module"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-groups = ["main"]
-files = [
-    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
-    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
-]
-
-[package.dependencies]
-six = ">=1.5"
 
 [[package]]
 name = "python-dotenv"
@@ -5072,4 +5005,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<=3.13"
-content-hash = "baccd0358d3de3a6c80ea2b3dc061157b7ae83dd10b363946dc8b83592b1212f"
+content-hash = "8edcef905929d3195ae1fed75af89ec12e962a5bad043d5bfbb115b4c8181e99"

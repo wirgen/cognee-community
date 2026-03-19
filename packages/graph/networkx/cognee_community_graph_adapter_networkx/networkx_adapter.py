@@ -711,7 +711,10 @@ class NetworkXAdapter(GraphDBInterface):
             raise error
 
     async def get_nodeset_subgraph(
-        self, node_type: type[Any], node_name: list[str]
+        self,
+        node_type: type[Any],
+        node_name: list[str],
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> tuple[list[tuple[int, dict]], list[tuple[int, int, str, dict]]]:
         """
         Obtain a subgraph based on specific node types and names. Not supported in this
