@@ -328,7 +328,8 @@ class MilvusAdapter:
         limit: int | None = 10,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
         **kwargs: object,
     ) -> list[dict[str, object]]:
         """
@@ -422,7 +423,8 @@ class MilvusAdapter:
         limit: int | None = 10,
         with_vectors: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
         **kwargs: object,
     ) -> list[list[dict[str, object]]]:
         """

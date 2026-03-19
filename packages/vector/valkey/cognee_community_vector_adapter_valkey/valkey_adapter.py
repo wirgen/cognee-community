@@ -353,7 +353,8 @@ class ValkeyAdapter(VectorDBInterface):
         limit: int | None = 15,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,
+        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
+        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
     ) -> list[ScoredResult]:
         """Search for similar vectors in the collection.
 
@@ -440,6 +441,7 @@ class ValkeyAdapter(VectorDBInterface):
         max_concurrency: int = 10,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list[list[ScoredResult]]:
         """Perform batch search for multiple queries.
 
@@ -475,6 +477,8 @@ class ValkeyAdapter(VectorDBInterface):
                     limit=limit,
                     with_vector=with_vectors,
                     include_payload=include_payload,
+                    node_name=node_name,
+                    node_name_filter_operator=node_name_filter_operator,
                 )
 
         tasks = [limited_search(vector) for vector in vectors]

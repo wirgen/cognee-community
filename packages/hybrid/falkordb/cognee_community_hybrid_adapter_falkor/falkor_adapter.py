@@ -38,6 +38,7 @@ class IndexSchema(DataPoint):
     text: str
 
     metadata: dict = {"index_fields": ["text"]}
+    belongs_to_set: List[str] = []
 
 
 class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
@@ -545,6 +546,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
                 # Node is a DataPoint object
                 # TODO: Figure out how to get this data if node is of type Node, not DataPoint
                 embeddable_values = []
+                vectorized_values = []
                 property_names = DataPoint.get_embeddable_property_names(node)  # type: ignore
                 vector_map = {}
                 for property_name in property_names:
@@ -552,7 +554,8 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
                     if property_value is not None:
                         vector_map[property_name] = len(embeddable_values)
                         embeddable_values.append(property_value)
-                vectorized_values = await self.embed_data(embeddable_values)
+                if len(embeddable_values) > 0:
+                    vectorized_values = await self.embed_data(embeddable_values)
 
                 properties = {
                     **node.model_dump(),
@@ -766,6 +769,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         with_vector: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list:
         """
         Search for nodes in a collection based on text or vector query, with optional limitation
@@ -821,17 +825,29 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
             if with_vector:
                 result_properties.append(f"node.{attribute_name}_vector")
 
+        filters = ""
+        if node_name:
+            if node_name_filter_operator == "OR":
+                filters = "any(x IN $node_names WHERE x IN coalesce(node.belongs_to_set, []))"
+            else:
+                filters = "all(x IN $node_names WHERE x IN coalesce(node.belongs_to_set, []))"
+
+        where_clause = f"\n            WHERE {filters}" if filters else ""
+
         query = dedent(f"""
-        CALL db.idx.vector.queryNodes(
-            '{label}',
-            '{attribute_name}_vector',
-            {limit},
-            vecf32({query_vector}))
-        YIELD node, score
-        RETURN {", ".join(result_properties)}, score
+            CALL db.idx.vector.queryNodes(
+                '{label}',
+                '{attribute_name}_vector',
+                {limit},
+                vecf32({query_vector})
+            )
+            YIELD node, score{where_clause}
+            RETURN {", ".join(result_properties)}, score
         """).strip()
 
-        search_results = await self.query(query)
+        params = {"node_names": node_name} if node_name else {}
+
+        search_results = await self.query(query, params)
 
         # Convert results to ScoredResult objects
         scored_results = []
@@ -867,6 +883,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         with_vectors: bool = False,
         include_payload: bool = False,
         node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list:
         """
         Perform batch search across multiple queries based on text inputs and return results
@@ -900,6 +917,8 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
                     limit=limit,
                     with_vector=with_vectors,
                     include_payload=include_payload,
+                    node_name=node_name,
+                    node_name_filter_operator=node_name_filter_operator,
                 )
                 for query_vector in query_vectors
             ]
@@ -1255,7 +1274,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         return [record[0] for record in result.result_set] if result.result_set else []
 
     async def get_nodeset_subgraph(
-        self, node_type: type[Any], node_name: list[str]
+        self, node_type: type[Any], node_name: list[str], node_name_filter_operator: str = "OR"
     ) -> tuple[list[tuple[int, dict]], list[tuple[int, int, str, dict]]]:
         """
         Fetch a subgraph consisting of a specific set of nodes and their relationships.
@@ -1283,14 +1302,24 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         # FalkorDB returns values by index: id, properties
         primary_ids = [record[0] for record in primary_result.result_set]
 
-        # Find neighbors of primary nodes
-        neighbor_query = """
-        MATCH (n)-[]-(neighbor)
-        WHERE n.id IN $ids
-        RETURN DISTINCT neighbor.id, properties(neighbor) AS properties
-        """
+        if node_name_filter_operator == "OR":
+            neighbor_query = """
+                MATCH (n)-[]-(nbr)
+                WHERE n.id IN $ids
+                RETURN DISTINCT nbr.id, properties(nbr) AS properties
+            """
+            params = {"ids": primary_ids}
+        else:
+            neighbor_query = """
+                MATCH (n)-[]-(nbr)
+                WHERE n.id IN $ids
+                WITH nbr, COUNT(DISTINCT n.id) AS matched_count
+                WHERE matched_count = $primary_count
+                RETURN nbr.id AS nbr_id, properties(nbr) AS properties
+             """
+            params = {"ids": primary_ids, "primary_count": len(primary_ids)}
 
-        neighbor_result = await self.query(neighbor_query, {"ids": primary_ids})
+        neighbor_result = await self.query(neighbor_query, params)
         # FalkorDB returns values by index: id, properties
         neighbor_ids = (
             [record[0] for record in neighbor_result.result_set]

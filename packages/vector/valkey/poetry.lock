@@ -804,14 +804,14 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "cognee"
-version = "0.5.3"
+version = "0.5.5"
 description = "Cognee - is a library for enriching LLM context with a semantic layer for better understanding and reasoning."
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "cognee-0.5.3-py3-none-any.whl", hash = "sha256:9fffc56b985e28e7069e06380ed3b344d51e963b25e01dd0140627501e2f2cb7"},
-    {file = "cognee-0.5.3.tar.gz", hash = "sha256:9ee78095607267c40758e65522514bac47a884d4ea3e920018298b95c879db21"},
+    {file = "cognee-0.5.5-py3-none-any.whl", hash = "sha256:ba8f5f0d9f69336966f412f0dfa85a717cdd100a78d6733316efd65effb7f9a3"},
+    {file = "cognee-0.5.5.tar.gz", hash = "sha256:777408a9dfed35eea9c9a39915eb736863f16557c33c2a4357789255cf1b5e8c"},
 ]
 
 [package.dependencies]
@@ -836,7 +836,6 @@ lancedb = ">=0.24.0,<1.0.0"
 langdetect = ">=1.0.9"
 limits = ">=4.4.1,<5"
 litellm = ">=1.76.0"
-mistralai = ">=1.9.10"
 nbformat = ">=5.7.0,<6.0.0"
 networkx = ">=3.4.2,<4"
 numpy = ">=1.26.4,<=4.0.0"
@@ -880,8 +879,8 @@ huggingface = ["transformers (>=4.46.3,<5)"]
 langchain = ["langchain-core (>=1.2.5)", "langchain-text-splitters (>=0.3.2,<1.0.0)", "langsmith (>=0.2.3,<1.0.0)"]
 llama-cpp = ["llama-cpp-python[server] (>=0.3.0,<1.0.0)"]
 llama-index = ["llama-index-core (>=0.13.0,<0.14)"]
-mistral = ["mistral-common (>=1.5.2,<2)"]
-monitoring = ["langfuse (>=2.32.0,<3)", "sentry-sdk[fastapi] (>=2.9.0,<3)"]
+mistral = ["mistral-common (>=1.5.2,<2)", "mistralai (>=1.9.10,<2)"]
+monitoring = ["langfuse (>=2.32.0,<3)", "opentelemetry-api (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-grpc (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0,<2)", "opentelemetry-sdk (>=1.20.0,<2)", "sentry-sdk[fastapi] (>=2.9.0,<3)"]
 neo4j = ["neo4j (>=5.28.0,<6)"]
 neptune = ["langchain-aws (>=0.2.22)"]
 notebook = ["notebook (>=7.1.0,<8)"]
@@ -891,6 +890,7 @@ postgres-binary = ["asyncpg (>=0.30.0,<1.0.0)", "pgvector (>=0.3.5,<0.4)", "psyc
 posthog = ["posthog (>=3.5.0,<4)"]
 redis = ["redis (>=5.0.3,<6.0.0)"]
 scraping = ["apscheduler (>=3.10.0,<=3.11.0)", "beautifulsoup4 (>=4.13.1)", "lxml (>=4.9.3,<5) ; python_version < \"3.13\"", "lxml (>=5,<6) ; python_version >= \"3.13\"", "playwright (>=1.9.0)", "protego (>=0.1)", "tavily-python (>=0.7.12)"]
+tracing = ["opentelemetry-api (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-grpc (>=1.20.0,<2)", "opentelemetry-exporter-otlp-proto-http (>=1.20.0,<2)", "opentelemetry-sdk (>=1.20.0,<2)"]
 
 [[package]]
 name = "colorama"
@@ -1261,21 +1261,6 @@ files = [
 [package.dependencies]
 dnspython = ">=2.0.0"
 idna = ">=2.0.0"
-
-[[package]]
-name = "eval-type-backport"
-version = "0.3.1"
-description = "Like `typing._eval_type`, but lets older Python versions use newer typing features."
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "eval_type_backport-0.3.1-py3-none-any.whl", hash = "sha256:279ab641905e9f11129f56a8a78f493518515b83402b860f6f06dd7c011fdfa8"},
-    {file = "eval_type_backport-0.3.1.tar.gz", hash = "sha256:57e993f7b5b69d271e37482e62f74e76a0276c82490cf8e4f0dffeb6b332d5ed"},
-]
-
-[package.extras]
-tests = ["pytest"]
 
 [[package]]
 name = "fakeredis"
@@ -1730,24 +1715,6 @@ files = [
 ]
 
 [[package]]
-name = "googleapis-common-protos"
-version = "1.72.0"
-description = "Common protobufs used in Google APIs"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "googleapis_common_protos-1.72.0-py3-none-any.whl", hash = "sha256:4299c5a82d5ae1a9702ada957347726b167f9f8d1fc352477702a1e851ff4038"},
-    {file = "googleapis_common_protos-1.72.0.tar.gz", hash = "sha256:e55a601c1b32b52d7a3e65f43563e2aa61bcd737998ee672ac9b951cd49319f5"},
-]
-
-[package.dependencies]
-protobuf = ">=3.20.2,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<7.0.0"
-
-[package.extras]
-grpc = ["grpcio (>=1.44.0,<2.0.0)"]
-
-[[package]]
 name = "greenlet"
 version = "3.3.1"
 description = "Lightweight in-process concurrent programming"
@@ -2128,18 +2095,6 @@ trafilatura = ["trafilatura (>=1.12.2,<3.0.0)"]
 vertexai = ["google-cloud-aiplatform (>=1.53.0,<2.0.0)", "jsonref (>=1.1.0,<2.0.0)"]
 writer = ["writer-sdk (>=2.2.0,<3.0.0)"]
 xai = ["python-dotenv (>=1.0.0)", "xai-sdk (>=0.2.0) ; python_version >= \"3.10\""]
-
-[[package]]
-name = "invoke"
-version = "2.2.1"
-description = "Pythonic task execution"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "invoke-2.2.1-py3-none-any.whl", hash = "sha256:2413bc441b376e5cd3f55bb5d364f973ad8bdd7bf87e53c79de3c11bf3feecc8"},
-    {file = "invoke-2.2.1.tar.gz", hash = "sha256:515bf49b4a48932b79b024590348da22f39c4942dff991ad1fb8b8baea1be707"},
-]
 
 [[package]]
 name = "isort"
@@ -2915,35 +2870,6 @@ files = [
 ]
 
 [[package]]
-name = "mistralai"
-version = "1.10.1"
-description = "Python Client SDK for the Mistral AI API."
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "mistralai-1.10.1-py3-none-any.whl", hash = "sha256:f9526ec1a42b950f1cec019626b9c1a0f5fb7fbac904a844b1d038286c8ee5f0"},
-    {file = "mistralai-1.10.1.tar.gz", hash = "sha256:2162c56840dc325bddac4d36877c4d97765ee0cf4db5f2825f469c14511063e9"},
-]
-
-[package.dependencies]
-eval-type-backport = ">=0.2.0"
-httpx = ">=0.28.1"
-invoke = ">=2.2.0,<3.0.0"
-opentelemetry-api = ">=1.33.1,<2.0.0"
-opentelemetry-exporter-otlp-proto-http = ">=1.37.0,<2.0.0"
-opentelemetry-sdk = ">=1.33.1,<2.0.0"
-opentelemetry-semantic-conventions = ">=0.59b0,<0.60"
-pydantic = ">=2.10.3"
-python-dateutil = ">=2.8.2"
-pyyaml = ">=6.0.2,<7.0.0"
-typing-inspection = ">=0.4.0"
-
-[package.extras]
-agents = ["authlib (>=1.5.2,<2.0)", "griffe (>=1.7.3,<2.0)", "mcp (>=1.0,<2.0)"]
-gcp = ["google-auth (>=2.27.0)", "requests (>=2.32.3)"]
-
-[[package]]
 name = "mmh3"
 version = "5.2.0"
 description = "Python extension for MurmurHash (MurmurHash3), a set of fast and robust hash functions."
@@ -3544,106 +3470,6 @@ aiohttp = ["aiohttp", "httpx-aiohttp (>=0.1.9)"]
 datalib = ["numpy (>=1)", "pandas (>=1.2.3)", "pandas-stubs (>=1.1.0.11)"]
 realtime = ["websockets (>=13,<16)"]
 voice-helpers = ["numpy (>=2.0.2)", "sounddevice (>=0.5.1)"]
-
-[[package]]
-name = "opentelemetry-api"
-version = "1.38.0"
-description = "OpenTelemetry Python API"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_api-1.38.0-py3-none-any.whl", hash = "sha256:2891b0197f47124454ab9f0cf58f3be33faca394457ac3e09daba13ff50aa582"},
-    {file = "opentelemetry_api-1.38.0.tar.gz", hash = "sha256:f4c193b5e8acb0912b06ac5b16321908dd0843d75049c091487322284a3eea12"},
-]
-
-[package.dependencies]
-importlib-metadata = ">=6.0,<8.8.0"
-typing-extensions = ">=4.5.0"
-
-[[package]]
-name = "opentelemetry-exporter-otlp-proto-common"
-version = "1.38.0"
-description = "OpenTelemetry Protobuf encoding"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_exporter_otlp_proto_common-1.38.0-py3-none-any.whl", hash = "sha256:03cb76ab213300fe4f4c62b7d8f17d97fcfd21b89f0b5ce38ea156327ddda74a"},
-    {file = "opentelemetry_exporter_otlp_proto_common-1.38.0.tar.gz", hash = "sha256:e333278afab4695aa8114eeb7bf4e44e65c6607d54968271a249c180b2cb605c"},
-]
-
-[package.dependencies]
-opentelemetry-proto = "1.38.0"
-
-[[package]]
-name = "opentelemetry-exporter-otlp-proto-http"
-version = "1.38.0"
-description = "OpenTelemetry Collector Protobuf over HTTP Exporter"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_exporter_otlp_proto_http-1.38.0-py3-none-any.whl", hash = "sha256:84b937305edfc563f08ec69b9cb2298be8188371217e867c1854d77198d0825b"},
-    {file = "opentelemetry_exporter_otlp_proto_http-1.38.0.tar.gz", hash = "sha256:f16bd44baf15cbe07633c5112ffc68229d0edbeac7b37610be0b2def4e21e90b"},
-]
-
-[package.dependencies]
-googleapis-common-protos = ">=1.52,<2.0"
-opentelemetry-api = ">=1.15,<2.0"
-opentelemetry-exporter-otlp-proto-common = "1.38.0"
-opentelemetry-proto = "1.38.0"
-opentelemetry-sdk = ">=1.38.0,<1.39.0"
-requests = ">=2.7,<3.0"
-typing-extensions = ">=4.5.0"
-
-[[package]]
-name = "opentelemetry-proto"
-version = "1.38.0"
-description = "OpenTelemetry Python Proto"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_proto-1.38.0-py3-none-any.whl", hash = "sha256:b6ebe54d3217c42e45462e2a1ae28c3e2bf2ec5a5645236a490f55f45f1a0a18"},
-    {file = "opentelemetry_proto-1.38.0.tar.gz", hash = "sha256:88b161e89d9d372ce723da289b7da74c3a8354a8e5359992be813942969ed468"},
-]
-
-[package.dependencies]
-protobuf = ">=5.0,<7.0"
-
-[[package]]
-name = "opentelemetry-sdk"
-version = "1.38.0"
-description = "OpenTelemetry Python SDK"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_sdk-1.38.0-py3-none-any.whl", hash = "sha256:1c66af6564ecc1553d72d811a01df063ff097cdc82ce188da9951f93b8d10f6b"},
-    {file = "opentelemetry_sdk-1.38.0.tar.gz", hash = "sha256:93df5d4d871ed09cb4272305be4d996236eedb232253e3ab864c8620f051cebe"},
-]
-
-[package.dependencies]
-opentelemetry-api = "1.38.0"
-opentelemetry-semantic-conventions = "0.59b0"
-typing-extensions = ">=4.5.0"
-
-[[package]]
-name = "opentelemetry-semantic-conventions"
-version = "0.59b0"
-description = "OpenTelemetry Semantic Conventions"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "opentelemetry_semantic_conventions-0.59b0-py3-none-any.whl", hash = "sha256:35d3b8833ef97d614136e253c1da9342b4c3c083bbaf29ce31d572a1c3825eed"},
-    {file = "opentelemetry_semantic_conventions-0.59b0.tar.gz", hash = "sha256:7a6db3f30d70202d5bf9fa4b69bc866ca6a30437287de6c510fb594878aed6b0"},
-]
-
-[package.dependencies]
-opentelemetry-api = "1.38.0"
-typing-extensions = ">=4.5.0"
 
 [[package]]
 name = "overrides"
@@ -6137,4 +5963,4 @@ test = ["pytest", "pytest-asyncio", "valkey-glide"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<=3.13"
-content-hash = "4e146cd5f6e90d945f90df262947ebef72480dfcd53bad7a5e26695a861060d3"
+content-hash = "b5ae16e73fe79e0719deeb3b5c34b95520fae66311c59cefdff83b77657c3ba6"
