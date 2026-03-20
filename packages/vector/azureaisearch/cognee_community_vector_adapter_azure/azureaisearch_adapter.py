@@ -290,7 +290,14 @@ class AzureAISearchAdapter(VectorDBInterface):
         with_vector: bool = False,
         normalized: bool = True,
     ) -> list[ScoredResult]:
-        """Perform vector or hybrid search."""
+        """Perform vector or hybrid search.
+        Args:
+            normalized: When True (default), returns ``1 - similarity``
+                so that lower scores indicate better matches, consistent
+                with cognee's ``ScoredResult`` contract.  When False,
+                returns the raw Azure ``@search.score`` (cosine
+                similarity, higher = better).
+        """
         sanitized_name = self._sanitize_index_name(collection_name)
 
         if query_text is None and query_vector is None:
@@ -360,9 +367,9 @@ class AzureAISearchAdapter(VectorDBInterface):
                             **payload,
                             "id": parse_id(result["id"]),
                         },
-                        score=result["@search.score"]
+                        score=1 - result["@search.score"]
                         if normalized
-                        else 1 - result["@search.score"],
+                        else result["@search.score"],
                     )
                 )
 
