@@ -836,8 +836,8 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
 
         query = dedent(f"""
             CALL db.idx.vector.queryNodes(
-                '{label}',
-                '{attribute_name}_vector',
+                "{label}",
+                "{attribute_name}_vector",
                 {limit},
                 vecf32({query_vector})
             )
