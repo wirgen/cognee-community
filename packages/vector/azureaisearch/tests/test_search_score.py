@@ -1,9 +1,9 @@
 import pytest
+
 # No adapter import needed — we're testing pure score logic
 
 
 class TestScoreNormalization:
-
     def test_normalized_true_inverts_score(self):
         """
         normalized=True should invert the Azure score (1 - score)
