@@ -122,8 +122,10 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
                 sanitized[key] = value.value
             elif isinstance(value, list):
                 sanitized[key] = [
-                    item.value if isinstance(item, Enum)
-                    else FalkorDBAdapter._sanitize_cypher_params(item) if isinstance(item, dict)
+                    item.value
+                    if isinstance(item, Enum)
+                    else FalkorDBAdapter._sanitize_cypher_params(item)
+                    if isinstance(item, dict)
                     else item
                     for item in value
                 ]
