@@ -1,5 +1,6 @@
 import asyncio
 import json
+from enum import Enum
 from textwrap import dedent
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID
@@ -104,6 +105,32 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         self.graph_name = database_name if database_name else "cognee_graph"
         self.api_key = api_key
 
+    @staticmethod
+    def _sanitize_cypher_params(params: dict) -> dict:
+        """Recursively convert Enum values to their underlying value.
+
+        FalkorDB serializes unknown types via ``str()``, which turns
+        ``MyEnum.member`` into ``"MyEnum.member"`` – an invalid Cypher
+        literal.  This helper ensures every Enum is replaced by its
+        ``.value`` before the params reach the driver.
+        """
+        sanitized = {}
+        for key, value in params.items():
+            if isinstance(value, dict):
+                sanitized[key] = FalkorDBAdapter._sanitize_cypher_params(value)
+            elif isinstance(value, Enum):
+                sanitized[key] = value.value
+            elif isinstance(value, list):
+                sanitized[key] = [
+                    item.value if isinstance(item, Enum)
+                    else FalkorDBAdapter._sanitize_cypher_params(item) if isinstance(item, dict)
+                    else item
+                    for item in value
+                ]
+            else:
+                sanitized[key] = value
+        return sanitized
+
     # TODO: This should return a list of results, not a single result
     async def query(self, query: str, params: dict = None) -> QueryResult:
         """
@@ -127,6 +154,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         """
         if params is None:
             params = {}
+        params = self._sanitize_cypher_params(params)
         graph = self.driver.select_graph(self.graph_name)
 
         try:
