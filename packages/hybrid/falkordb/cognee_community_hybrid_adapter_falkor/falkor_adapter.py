@@ -169,6 +169,10 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         """
         Embed a list of text data into vector representations using the embedding engine.
 
+        Empty or blank-only inputs are handled gracefully: an empty list
+        returns ``[]``, and blank strings are skipped while preserving
+        index alignment in the output.
+
         Parameters:
         -----------
 
@@ -180,7 +184,23 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
             - list[list[float]]: A list of lists, where each inner list contains float values
               representing the embedded vectors.
         """
-        return await self.embedding_engine.embed_text(data)  # type: ignore
+        if not data:
+            return []
+
+        # Filter out blank strings that would cause embedding API errors
+        non_blank = [s for s in data if s and s.strip()]
+        if not non_blank:
+            return [[] for _ in data]
+
+        result = await self.embedding_engine.embed_text(non_blank)  # type: ignore
+
+        # Fast path: no blanks were filtered
+        if len(non_blank) == len(data):
+            return result
+
+        # Re-align: insert empty embeddings at filtered-out positions
+        it = iter(result)
+        return [next(it) if (s and s.strip()) else [] for s in data]
 
     async def stringify_properties(self, properties: dict) -> str:
         """
