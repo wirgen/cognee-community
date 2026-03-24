@@ -59,9 +59,9 @@ def test_mixed_blank_and_valid():
 
     assert len(result) == 4
     assert result[0] == [0.1, 0.2]  # "hello"
-    assert result[1] == []           # "" (blank)
+    assert result[1] == []  # "" (blank)
     assert result[2] == [0.3, 0.4]  # "world"
-    assert result[3] == []           # "  " (blank)
+    assert result[3] == []  # "  " (blank)
     mock_fn.assert_called_once_with(["hello", "world"])
 
 
