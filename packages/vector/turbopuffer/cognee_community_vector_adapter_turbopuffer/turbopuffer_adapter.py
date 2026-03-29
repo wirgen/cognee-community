@@ -54,7 +54,7 @@ def _truncate_large_values(payload: dict) -> dict:
     for key, value in payload.items():
         if isinstance(value, str) and len(value.encode("utf-8")) > _MAX_ATTR_BYTES:
             # Truncate to fit within limit
-            encoded = value.encode("utf-8")[:_MAX_ATTR_BYTES - 3]
+            encoded = value.encode("utf-8")[: _MAX_ATTR_BYTES - 3]
             result[key] = encoded.decode("utf-8", errors="ignore") + "..."
         else:
             result[key] = value
@@ -266,18 +266,14 @@ class TurbopufferAdapter(VectorDBInterface):
             if max_dist == min_dist:
                 normalized = [0.0] * len(distances)
             else:
-                normalized = [
-                    (d - min_dist) / (max_dist - min_dist) for d in distances
-                ]
+                normalized = [(d - min_dist) / (max_dist - min_dist) for d in distances]
 
             scored_results = []
             for i, row in enumerate(rows):
                 payload = None
                 if include_payload:
                     extra = row.model_extra or {}
-                    payload = {
-                        k: v for k, v in extra.items() if k not in ("$dist",)
-                    }
+                    payload = {k: v for k, v in extra.items() if k not in ("$dist",)}
                     payload["id"] = parse_id(str(row.id))
 
                 scored_results.append(
