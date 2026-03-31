@@ -9,9 +9,8 @@ from cognee_community_vector_adapter_turbopuffer import register  # noqa: F401
 
 
 async def main():
-    from dotenv import load_dotenv
-
     from cognee import SearchType, add, cognify, config, prune, search
+    from dotenv import load_dotenv
 
     load_dotenv()
 

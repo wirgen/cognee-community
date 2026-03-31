@@ -1,16 +1,10 @@
 version = 1
 revision = 3
-requires-python = ">=3.11, <=3.13"
+requires-python = ">=3.11, <3.14"
 resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'darwin'",
-    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
-    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
-    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
-    "python_full_version < '3.12' and sys_platform == 'darwin'",
-    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version >= '3.13'",
+    "python_full_version == '3.12.*'",
+    "python_full_version < '3.12'",
 ]
 
 [[package]]
@@ -497,7 +491,7 @@ wheels = [
 
 [[package]]
 name = "cognee"
-version = "0.5.3"
+version = "0.5.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -511,7 +505,6 @@ dependencies = [
     { name = "fakeredis", extra = ["lua"] },
     { name = "fastapi" },
     { name = "fastapi-users", extra = ["sqlalchemy"] },
-    { name = "fastembed" },
     { name = "filetype" },
     { name = "gunicorn" },
     { name = "instructor" },
@@ -521,11 +514,9 @@ dependencies = [
     { name = "langdetect" },
     { name = "limits" },
     { name = "litellm" },
-    { name = "mistralai" },
     { name = "nbformat" },
     { name = "networkx" },
     { name = "numpy" },
-    { name = "onnxruntime" },
     { name = "openai" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -545,14 +536,14 @@ dependencies = [
     { name = "uvicorn" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/d2/acb4b79b3c091daddf63aec2f5be1bcaf8fb4466a6f5f5cce580b4851314/cognee-0.5.3.tar.gz", hash = "sha256:9ee78095607267c40758e65522514bac47a884d4ea3e920018298b95c879db21", size = 14582882, upload-time = "2026-02-27T06:33:17.735Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/10/68/ee7f70def7de553270e491df18a390d528bef4f4fdc26d64c0536b5dea90/cognee-0.5.6.tar.gz", hash = "sha256:b9bcd2a72d5168ef4a8a61ff4e46ae1f85def7b14e1ad0bde9833156915a7666", size = 18243239, upload-time = "2026-03-30T22:06:32.835Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/05/81/7829f30dbcfb2a501d5a3da1a5cbaa717b9816d62fc9e4ff027a14053c1f/cognee-0.5.3-py3-none-any.whl", hash = "sha256:9fffc56b985e28e7069e06380ed3b344d51e963b25e01dd0140627501e2f2cb7", size = 1651521, upload-time = "2026-02-27T06:33:20.327Z" },
+    { url = "https://files.pythonhosted.org/packages/64/62/4d774654e0252e70a2572639c57c943e58b1cef9f6e08cd176af01aa8920/cognee-0.5.6-py3-none-any.whl", hash = "sha256:12c22f7ca0f3e2ccaf8c81a06bce1c9217ac028eb7db9af6a4ab0206975faeb8", size = 1781891, upload-time = "2026-03-30T22:06:35.464Z" },
 ]
 
 [[package]]
 name = "cognee-community-pipeline-codify"
-version = "0.1.3"
+version = "0.1.4"
 source = { virtual = "." }
 dependencies = [
     { name = "cognee" },
@@ -566,9 +557,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cognee", specifier = "==0.5.3" },
-    { name = "cognee-community-retriever-code", specifier = ">=0.1.1" },
-    { name = "cognee-community-tasks-codify", specifier = ">=0.0.1" },
+    { name = "cognee", specifier = "==0.5.6" },
+    { name = "cognee-community-retriever-code", specifier = ">=0.1.5" },
+    { name = "cognee-community-tasks-codify", specifier = ">=0.1.5" },
     { name = "fastembed", marker = "python_full_version < '3.13'", specifier = "<=0.6.0" },
     { name = "transformers", specifier = ">=4.46.3,<5" },
     { name = "tree-sitter", specifier = ">=0.24.0,<0.25" },
@@ -577,27 +568,27 @@ requires-dist = [
 
 [[package]]
 name = "cognee-community-retriever-code"
-version = "0.1.3"
+version = "0.1.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aenum" },
     { name = "cognee" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/75/0a/5a342e836a80aabc2d1856cbf4a9d1dd5cf7520e7b95823c945a55b7b5bf/cognee_community_retriever_code-0.1.3.tar.gz", hash = "sha256:3d4b65c2ec1b49f146a71b213b5479689749e893f0643e5e43e6b53c1ba95e2b", size = 3359, upload-time = "2026-02-27T15:34:37.279Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/63/531372728c8445125c58697ab66b94dda14afd3aa4561fd15b20a4aa8020/cognee_community_retriever_code-0.1.5.tar.gz", hash = "sha256:1931ade8d7862e0425275150a40e6ad54d521e9765be2b0e1f0015814332e42c", size = 3359, upload-time = "2026-03-31T12:14:23.275Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/cb/5dd2cfd9e2dc4fde65be0a3d24dd8d1c69824ca58fc5f332c124ca392049/cognee_community_retriever_code-0.1.3-py3-none-any.whl", hash = "sha256:e91d3d389d604032a6632ff338fa80e53d7aa11aefce3af976c4d78f21603b07", size = 4623, upload-time = "2026-02-27T15:34:36.444Z" },
+    { url = "https://files.pythonhosted.org/packages/50/b0/a25834025c8c9e9f5dcc8f8b89e9d19b923cd945ba2e2f85aa16932a334e/cognee_community_retriever_code-0.1.5-py3-none-any.whl", hash = "sha256:8e83736279781094977d65ee3c159e03f29fd9e1a29567df5d4cb93c9aa95967", size = 4620, upload-time = "2026-03-31T12:14:22.152Z" },
 ]
 
 [[package]]
 name = "cognee-community-tasks-codify"
-version = "0.0.1"
+version = "0.1.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cognee" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/fa/2445a2fc0035db01f3ce0d33d5db94d2eb788f04e261fe22b62e2d612343/cognee_community_tasks_codify-0.0.1.tar.gz", hash = "sha256:5f438a025ca79a8ae8ab564dc417fb9495462bc05f4fa43af1af09002680b4de", size = 7512, upload-time = "2025-12-05T17:57:40.511Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/6d/fd523c98f7f73c07db08bf5eb0fe4424e3659bdcd124d4a398160a3c0d94/cognee_community_tasks_codify-0.1.5.tar.gz", hash = "sha256:8eadb833233ddee714f5b2f321ed1f3de564beb3742d025c9c5d95c75bba1d3a", size = 7513, upload-time = "2026-03-31T12:17:25.188Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/84/5f9b71b84dfe3bb2f36eb5c7afc2ba3ae88050c8ba06a7e201be9858ee33/cognee_community_tasks_codify-0.0.1-py3-none-any.whl", hash = "sha256:13ee8de06a5aef080650c4b8a2c675e25be371a54b901d8ee48eb2752f3c1246", size = 10905, upload-time = "2025-12-05T17:57:39.545Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/db/4ac053d97f3d537e24f8ad79f72db70040939a80566a5b74bab4431012d9/cognee_community_tasks_codify-0.1.5-py3-none-any.whl", hash = "sha256:e879cc03340d64e8e1513969b9c9db984afdd58c64280b9b7f78b12f887fc5e2", size = 10909, upload-time = "2026-03-31T12:17:24.365Z" },
 ]
 
 [[package]]
@@ -614,7 +605,7 @@ name = "coloredlogs"
 version = "15.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "humanfriendly" },
+    { name = "humanfriendly", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cc/c7/eed8f27100517e8c0e6b923d5f0845d0cb99763da6fdee00478f91db7325/coloredlogs-15.0.1.tar.gz", hash = "sha256:7c991aa71a4577af2f82600d8f8f3a89f936baeaf9b50a9c197da014e5bf16b0", size = 278520, upload-time = "2021-06-11T10:22:45.202Z" }
 wheels = [
@@ -772,15 +763,6 @@ wheels = [
 ]
 
 [[package]]
-name = "eval-type-backport"
-version = "0.3.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fb/a3/cafafb4558fd638aadfe4121dc6cefb8d743368c085acb2f521df0f3d9d7/eval_type_backport-0.3.1.tar.gz", hash = "sha256:57e993f7b5b69d271e37482e62f74e76a0276c82490cf8e4f0dffeb6b332d5ed", size = 9445, upload-time = "2025-12-02T11:51:42.987Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/22/fdc2e30d43ff853720042fa15baa3e6122722be1a7950a98233ebb55cd71/eval_type_backport-0.3.1-py3-none-any.whl", hash = "sha256:279ab641905e9f11129f56a8a78f493518515b83402b860f6f06dd7c011fdfa8", size = 6063, upload-time = "2025-12-02T11:51:41.665Z" },
-]
-
-[[package]]
 name = "fakeredis"
 version = "2.32.1"
 source = { registry = "https://pypi.org/simple" }
@@ -853,16 +835,16 @@ name = "fastembed"
 version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "huggingface-hub" },
-    { name = "loguru" },
-    { name = "mmh3" },
-    { name = "numpy" },
-    { name = "onnxruntime" },
-    { name = "pillow" },
-    { name = "py-rust-stemmers" },
-    { name = "requests" },
-    { name = "tokenizers" },
-    { name = "tqdm" },
+    { name = "huggingface-hub", marker = "python_full_version < '3.13'" },
+    { name = "loguru", marker = "python_full_version < '3.13'" },
+    { name = "mmh3", marker = "python_full_version < '3.13'" },
+    { name = "numpy", marker = "python_full_version < '3.13'" },
+    { name = "onnxruntime", marker = "python_full_version < '3.13'" },
+    { name = "pillow", marker = "python_full_version < '3.13'" },
+    { name = "py-rust-stemmers", marker = "python_full_version < '3.13'" },
+    { name = "requests", marker = "python_full_version < '3.13'" },
+    { name = "tokenizers", marker = "python_full_version < '3.13'" },
+    { name = "tqdm", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c6/f4/036a656c605f63dc25f11284f60f69900a54a19c513e1ae60d21d6977e75/fastembed-0.6.0.tar.gz", hash = "sha256:5c9ead25f23449535b07243bbe1f370b820dcc77ec2931e61674e3fe7ff24733", size = 50731, upload-time = "2025-02-26T13:50:33.031Z" }
 wheels = [
@@ -1199,7 +1181,7 @@ name = "humanfriendly"
 version = "10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyreadline3", marker = "sys_platform == 'win32'" },
+    { name = "pyreadline3", marker = "python_full_version < '3.13' and sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cc/3f/2c29224acb2e2df4d2046e4c73ee2662023c58ff5b113c4c1adac0886c43/humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc", size = 360702, upload-time = "2021-09-17T21:40:43.31Z" }
 wheels = [
@@ -1272,15 +1254,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/31/f0/7f31609ec2fb84b140ff573abf1cce78cd3a2a3c6479b60aa82b69d40d2a/instructor-1.13.0.tar.gz", hash = "sha256:bf838a5c503fafdd034a9b1f8544c5e1f62462eea9f89932bc75c116ad35ab5a", size = 69898121, upload-time = "2025-11-06T04:19:31.034Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/95/64/6542ac826a4c9b937b67c096a785af1aaa26b22fcb7c81223cfe4038205b/instructor-1.13.0-py3-none-any.whl", hash = "sha256:2b735b6ea0d3194548369a18254f1dde83cb5ec0b182de77adbadd8be73caddc", size = 160904, upload-time = "2025-11-06T04:19:24.674Z" },
-]
-
-[[package]]
-name = "invoke"
-version = "2.2.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/de/bd/b461d3424a24c80490313fd77feeb666ca4f6a28c7e72713e3d9095719b4/invoke-2.2.1.tar.gz", hash = "sha256:515bf49b4a48932b79b024590348da22f39c4942dff991ad1fb8b8baea1be707", size = 304762, upload-time = "2025-10-11T00:36:35.172Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/4b/b99e37f88336009971405cbb7630610322ed6fbfa31e1d7ab3fbf3049a2d/invoke-2.2.1-py3-none-any.whl", hash = "sha256:2413bc441b376e5cd3f55bb5d364f973ad8bdd7bf87e53c79de3c11bf3feecc8", size = 160287, upload-time = "2025-10-11T00:36:33.703Z" },
 ]
 
 [[package]]
@@ -1532,8 +1505,8 @@ name = "loguru"
 version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "python_full_version < '3.13' and sys_platform == 'win32'" },
+    { name = "win32-setctime", marker = "python_full_version < '3.13' and sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559, upload-time = "2024-12-06T11:20:56.608Z" }
 wheels = [
@@ -1673,24 +1646,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
-]
-
-[[package]]
-name = "mistralai"
-version = "1.9.11"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "eval-type-backport" },
-    { name = "httpx" },
-    { name = "invoke" },
-    { name = "pydantic" },
-    { name = "python-dateutil" },
-    { name = "pyyaml" },
-    { name = "typing-inspection" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5a/8d/d8b7af67a966b6f227024e1cb7287fc19901a434f87a5a391dcfe635d338/mistralai-1.9.11.tar.gz", hash = "sha256:3df9e403c31a756ec79e78df25ee73cea3eb15f86693773e16b16adaf59c9b8a", size = 208051, upload-time = "2025-10-02T15:53:40.473Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/76/4ce12563aea5a76016f8643eff30ab731e6656c845e9e4d090ef10c7b925/mistralai-1.9.11-py3-none-any.whl", hash = "sha256:7a3dc2b8ef3fceaa3582220234261b5c4e3e03a972563b07afa150e44a25a6d3", size = 442796, upload-time = "2025-10-02T15:53:39.134Z" },
 ]
 
 [[package]]
@@ -1959,12 +1914,12 @@ name = "onnxruntime"
 version = "1.22.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "coloredlogs" },
-    { name = "flatbuffers" },
-    { name = "numpy" },
-    { name = "packaging" },
-    { name = "protobuf" },
-    { name = "sympy" },
+    { name = "coloredlogs", marker = "python_full_version < '3.13'" },
+    { name = "flatbuffers", marker = "python_full_version < '3.13'" },
+    { name = "numpy", marker = "python_full_version < '3.13'" },
+    { name = "packaging", marker = "python_full_version < '3.13'" },
+    { name = "protobuf", marker = "python_full_version < '3.13'" },
+    { name = "sympy", marker = "python_full_version < '3.13'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/ff/4a1a6747e039ef29a8d4ee4510060e9a805982b6da906a3da2306b7a3be6/onnxruntime-1.22.1-cp311-cp311-macosx_13_0_universal2.whl", hash = "sha256:f4581bccb786da68725d8eac7c63a8f31a89116b8761ff8b4989dc58b61d49a0", size = 34324148, upload-time = "2025-07-10T19:15:26.584Z" },
@@ -2923,7 +2878,7 @@ name = "sympy"
 version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "mpmath" },
+    { name = "mpmath", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/83/d3/803453b36afefb7c2bb238361cd4ae6125a569b4db67cd9e79846ba2d68c/sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517", size = 7793921, upload-time = "2025-04-27T18:05:01.611Z" }
 wheels = [

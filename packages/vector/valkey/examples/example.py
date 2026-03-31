@@ -3,9 +3,8 @@ import os
 import pathlib
 from os import path
 
-from cognee_community_vector_adapter_valkey import register  # noqa: F401
-
 from cognee import SearchType, add, cognify, config, prune, search
+from cognee_community_vector_adapter_valkey import register  # noqa: F401
 
 # Please provide an OpenAI API Key
 # os.environ.setdefault("LLM_API_KEY", "your-api-key")

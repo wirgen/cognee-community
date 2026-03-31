@@ -2,12 +2,11 @@ import asyncio
 import os
 import pathlib
 
+import cognee
+from cognee import SearchType
 from cognee_community_pipeline_codify.code_graph_pipeline import run_code_graph_pipeline
 from cognee_community_retriever_code import register  # noqa: F401
 from cognee_community_retriever_code.code_retriever import CodeSearchType
-
-import cognee
-from cognee import SearchType
 
 
 async def main():

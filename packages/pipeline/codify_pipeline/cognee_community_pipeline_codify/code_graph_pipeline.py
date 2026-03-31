@@ -1,5 +1,7 @@
-from typing import Optional
+from typing import Any, List, Optional
+from uuid import NAMESPACE_OID, UUID, uuid5
 
+from cognee.infrastructure.engine.models.DataPoint import DataPoint
 from cognee.infrastructure.llm import get_max_chunk_tokens
 from cognee.modules.cognify.config import get_cognify_config
 from cognee.modules.data.methods import create_authorized_dataset
@@ -23,6 +25,23 @@ observe = get_observe()
 logger = get_logger("code_graph_pipeline")
 
 
+class LightweightData(DataPoint):
+    """Lightweight DataPoint model for data ingestion only."""
+
+    id: UUID
+    repo_path: str
+
+
+def build_lightweight_data_object(data_list):
+    return [
+        LightweightData(id=uuid5(NAMESPACE_OID, str(data)), repo_path=data) for data in data_list
+    ]
+
+
+def ingest_repositories(data_list: List[Any]):
+    return [data.repo_path for data in data_list]
+
+
 @observe
 async def run_code_graph_pipeline(
     repo_path,
@@ -41,6 +60,7 @@ async def run_code_graph_pipeline(
         user = await get_default_user()
 
     tasks = [
+        Task(ingest_repositories),
         Task(
             get_repo_file_dependencies,
             detailed_extraction=detailed_extraction,
@@ -86,7 +106,7 @@ async def run_code_graph_pipeline(
     async for run_status in run_tasks(
         tasks,
         dataset.id,
-        repo_path,
+        build_lightweight_data_object(repo_path if isinstance(repo_path, list) else [repo_path]),
         user,
         "cognify_code_pipeline",
         incremental_loading=False,

@@ -7,6 +7,7 @@ import os
 import uuid
 
 import pytest
+from cognee import config
 from cognee.infrastructure.databases.vector import get_vector_engine
 from cognee.infrastructure.engine import DataPoint
 from cognee_community_vector_adapter_valkey import register  # noqa: F401
@@ -15,8 +16,6 @@ from cognee_community_vector_adapter_valkey.valkey_adapter import MissingQueryPa
 from dotenv import load_dotenv
 from glide import ft
 from glide_shared.constants import OK
-
-from cognee import config
 
 load_dotenv()
 

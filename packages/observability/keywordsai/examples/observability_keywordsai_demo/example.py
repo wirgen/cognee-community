@@ -4,14 +4,13 @@ import os
 from typing import Any
 
 import cognee_community_observability_keywordsai  # noqa: F401  (patches Cognee)
+from cognee import prune, visualize_graph
 from cognee.low_level import DataPoint, setup
 from cognee.modules.data.methods import load_or_create_datasets
 from cognee.modules.observability.get_observe import get_observe
 from cognee.modules.users.methods import get_default_user
 from cognee.pipelines import Task, run_tasks
 from cognee.tasks.storage import add_data_points as _add_data_points
-
-from cognee import prune, visualize_graph
 
 observe = get_observe()
 

@@ -1,6 +1,7 @@
 import os
 import pathlib
 
+import cognee
 from cognee.infrastructure.files.storage import get_storage_config
 from cognee.modules.engine.models import NodeSet
 from cognee.modules.retrieval.graph_completion_retriever import GraphCompletionRetriever
@@ -12,8 +13,6 @@ from cognee.shared.logging_utils import get_logger
 # NOTE: Importing the register module we let cognee know it can use the turingdb graph adapter
 # NOTE: The "noqa: F401" mark is to make sure the linter doesn't flag this as an unused import
 from cognee_community_graph_adapter_turingdb import register  # noqa: F401
-
-import cognee
 
 logger = get_logger()
 

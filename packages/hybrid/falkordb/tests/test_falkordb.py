@@ -1,6 +1,7 @@
 import os
 import pathlib
 
+import cognee
 from cognee.infrastructure.files.storage import get_storage_config
 from cognee.modules.search.operations import get_history
 from cognee.modules.search.types import SearchType
@@ -10,8 +11,6 @@ from cognee.shared.logging_utils import get_logger
 # NOTE: Importing the register module we let cognee know it can use the falkordb graph adapter
 # NOTE: The "noqa: F401" mark is to make sure the linter doesn't flag this as an unused import
 from cognee_community_hybrid_adapter_falkor import register  # noqa: F401
-
-import cognee
 
 logger = get_logger()
 
