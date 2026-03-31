@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 from enum import Enum
 from textwrap import dedent
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 from cognee.infrastructure.databases.exceptions import MissingQueryParameterError
@@ -538,9 +538,7 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
         """
         pass
 
-    async def add_node(
-        self, node: Union[DataPoint, str], properties: Optional[Dict[str, Any]] = None
-    ) -> None:
+    async def add_node(self, node_id: str, properties: Optional[Dict[str, Any]] = None) -> None:
         """
         Add a single node with specified properties to the graph.
 
@@ -550,7 +548,6 @@ class FalkorDBAdapter(VectorDBInterface, GraphDBInterface):
             - node_id (str): Unique identifier for the node being added.
             - properties (Dict[str, Any]): A dictionary of properties associated with the node.
         """
-        node_id = str(node.id)
         # Clean the properties - remove None values and handle special types
         clean_properties = {"id": node_id}
         for key, value in properties.items():
