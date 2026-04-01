@@ -4,7 +4,8 @@ import pathlib
 from os import path
 
 # Please provide an OpenAI API Key
-os.environ["LLM_API_KEY"] = ""
+# Keep CI/local env-provided keys intact and only default to empty if unset.
+os.environ.setdefault("LLM_API_KEY", "")
 
 
 async def main():
