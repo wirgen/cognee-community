@@ -164,7 +164,7 @@ class RedisAdapter(VectorDBInterface):
         if collection_name not in self._indices:
             schema = self._create_schema(collection_name)
             self._indices[collection_name] = AsyncSearchIndex(
-                schema=schema, redis_url=self.url, validate_on_load=True
+                schema=schema, redis_url=self.url, validate_on_load=False
             )
         return self._indices[collection_name]
 
@@ -248,7 +248,7 @@ class RedisAdapter(VectorDBInterface):
                         "",
                     ),
                     "vector": embedding,
-                    "payload_data": payload,  # Store as JSON string
+                    "payload": payload,  # Store as JSON string
                 }
                 documents.append(doc_data)
 
@@ -311,13 +311,13 @@ class RedisAdapter(VectorDBInterface):
                 doc = await index.fetch(data_id)
                 if doc:
                     # Parse the stored payload JSON
-                    payload_data = doc.get("payload_data", {})
-                    if isinstance(payload_data, str):
+                    payload = doc.get("$.payload", {})
+                    if isinstance(payload, str):
                         try:
-                            payload_data = json.loads(payload_data)
+                            payload = json.loads(payload)
                         except json.JSONDecodeError:
                             pass
-                    results.append(payload_data if isinstance(payload_data, dict) else doc)
+                    results.append(payload if isinstance(payload, dict) else doc)
 
             return results
 
@@ -333,8 +333,8 @@ class RedisAdapter(VectorDBInterface):
         limit: int | None = 15,
         with_vector: bool = False,
         include_payload: bool = False,
-        node_name: Optional[List[str]] = None,  # TODO: Add functionality for this parameter
-        node_name_filter_operator: str = "OR",  # TODO: Add functionality for this parameter
+        node_name: Optional[List[str]] = None,
+        node_name_filter_operator: str = "OR",
     ) -> list[ScoredResult]:
         """Search for similar vectors in the collection.
 
@@ -400,7 +400,7 @@ class RedisAdapter(VectorDBInterface):
 
             # Set return fields
             if include_payload:
-                return_fields = ["id", "text", "payload_data"]
+                return_fields = ["id", "text", "$.payload"]
             else:
                 return_fields = ["id", "text"]
             if with_vector:
@@ -414,17 +414,17 @@ class RedisAdapter(VectorDBInterface):
             scored_results = []
             for doc in results:
                 # Parse the stored payload - it's stored as JSON string
-                payload_data = doc.get("payload_data", {})
-                if isinstance(payload_data, str):
+                payload = doc.get("$.payload", {})
+                if isinstance(payload, str):
                     try:
-                        payload_data = json.loads(payload_data)
+                        payload = json.loads(payload)
                     except json.JSONDecodeError:
-                        payload_data = doc
-                payload = payload_data if isinstance(payload_data, dict) else doc
+                        payload = doc
+                payload = payload if isinstance(payload, dict) else doc
 
                 scored_results.append(
                     ScoredResult(
-                        id=parse_id(doc["id"].split(":", 1)[1]),
+                        id=parse_id(doc["id"].rsplit(":", 1)[1]),
                         payload=payload,
                         score=float(doc.get("vector_distance", 0.0)),  # RedisVL returns distance
                     )

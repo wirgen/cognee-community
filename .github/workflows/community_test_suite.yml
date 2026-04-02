@@ -130,7 +130,7 @@ jobs:
             "${{ needs.test-vector-databases.result }}" == "success" &&
             "${{ needs.test-graph-databases.result }}" == "success" &&
             "${{ needs.test-community-pipelines.result }}" == "success" &&
-            "${{ needs.test-community-retrievers.result }}" == "success" &&
+            "${{ needs.test-community-retrievers.result }}" == "success"
           ]]; then
             echo "✅ All community tests passed!"
             exit 0
