@@ -61,7 +61,9 @@ jobs:
           done
 
       - name: Set up Pytest
-        run: poetry run pip install pytest
+        run: |
+          cd packages/vector/valkey
+          poetry run pip install pytest
 
       - name: Run Valkey Example
         env:
