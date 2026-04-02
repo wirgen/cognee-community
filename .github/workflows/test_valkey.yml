@@ -60,6 +60,9 @@ jobs:
             sleep 2
           done
 
+      - name: Set up Pytest
+        run: poetry run pip install pytest
+
       - name: Run Valkey Example
         env:
           ENV: 'dev'
