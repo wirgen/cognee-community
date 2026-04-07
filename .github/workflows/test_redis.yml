@@ -104,3 +104,20 @@ jobs:
           VECTOR_DB_URL: 'redis://localhost:6379'
         working-directory: ./packages/vector/redis
         run: poetry run python tests/test_redis.py
+
+      - name: Run Redis Search Tests
+        env:
+          ENV: 'dev'
+          ENABLE_BACKEND_ACCESS_CONTROL: False
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+          LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_API_VERSION: ${{ secrets.LLM_API_VERSION }}
+          EMBEDDING_MODEL: ${{ secrets.EMBEDDING_MODEL }}
+          EMBEDDING_ENDPOINT: ${{ secrets.EMBEDDING_ENDPOINT }}
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
+          VECTOR_DB_PROVIDER: 'redis'
+          VECTOR_DB_URL: 'redis://localhost:6379'
+        working-directory: ./packages
+        run: poetry run pytest tests/test_search_db.py

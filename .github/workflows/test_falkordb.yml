@@ -119,3 +119,23 @@ jobs:
           VECTOR_DATASET_DATABASE_HANDLER: 'falkor_vector_local'
         working-directory: ./packages/hybrid/falkordb
         run: poetry run python tests/test_falkordb.py
+
+      - name: Run FalkorDB Search Tests
+        if: steps.check-keys.outputs.available == 'true'
+        env:
+          ENV: 'dev'
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+          LLM_ENDPOINT: ${{ secrets.LLM_ENDPOINT }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_API_VERSION: ${{ secrets.LLM_API_VERSION }}
+          EMBEDDING_MODEL: ${{ secrets.EMBEDDING_MODEL }}
+          EMBEDDING_ENDPOINT: ${{ secrets.EMBEDDING_ENDPOINT }}
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
+          GRAPH_DATABASE_PROVIDER: 'falkordb'
+          GRAPH_DB_URL: 'localhost'
+          GRAPH_DB_PORT: '6379'
+          GRAPH_DATASET_DATABASE_HANDLER: 'falkor_graph_local'
+          VECTOR_DATASET_DATABASE_HANDLER: 'falkor_vector_local'
+        working-directory: ./packages
+        run: poetry run pytest tests/test_search_db.py
