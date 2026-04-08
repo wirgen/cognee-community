@@ -225,6 +225,9 @@ jobs:
           GRAPH_DATABASE_PROVIDER: 'falkordb'
           GRAPH_DB_URL: 'localhost'
           GRAPH_DB_PORT: '6379'
+          VECTOR_DB_PROVIDER: 'falkordb'
+          VECTOR_DB_URL: 'localhost'
+          VECTOR_DB_PORT: '6379'
           GRAPH_DATASET_DATABASE_HANDLER: 'falkor_graph_local'
           VECTOR_DATASET_DATABASE_HANDLER: 'falkor_vector_local'
           ADAPTER_PACKAGE: cognee_community_hybrid_adapter_falkor
