@@ -62,6 +62,7 @@ class RedisDataPoint(DataPoint):
 
     text: str
     metadata: dict = {"index_fields": ["text"]}
+    belongs_to_set: List[str] = []
 
 
 class RedisAdapter(VectorDBInterface):
@@ -286,6 +287,7 @@ class RedisAdapter(VectorDBInterface):
                 RedisDataPoint(
                     id=data_point.id,
                     text=getattr(data_point, data_point.metadata.get("index_fields", ["text"])[0]),
+                    belongs_to_set=(data_point.belongs_to_set or []),
                 )
                 for data_point in data_points
             ],

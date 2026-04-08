@@ -35,8 +35,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test-qdrant:
-    name: "Qdrant Community Adapter Test"
+  run-qdrant-example:
+    name: "Qdrant Community Adapter Example"
     runs-on: ubuntu-22.04
     services:
       qdrant-node:
@@ -78,6 +78,33 @@ jobs:
           QDRANT_APT_URL: 'http://localhost:6333'
         working-directory: ./packages/vector/qdrant
         run: poetry run python example.py
+
+  test-qdrant:
+    name: "Qdrant Community Adapter Test"
+    runs-on: ubuntu-22.04
+    services:
+      qdrant-node:
+        image: qdrant/qdrant
+        options: >-
+          -v /tmp/qdrant_storage:/qdrant/storage
+        ports:
+          - 6333:6333
+          - 6334:6334
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Community Setup
+        uses: ./.github/actions/community_setup
+        with:
+          python-version: '3.11.x'
+          package-path: packages/vector/qdrant
+          event-type: ${{ inputs.event-type }}
+
+      - name: Debug Qdrant Configuration
+        run: |
+          echo "Testing connectivity to Qdrant..."
+          curl -f "http://localhost:6333" || echo "Connection failed"
 
       - name: Run Qdrant Tests
         env:

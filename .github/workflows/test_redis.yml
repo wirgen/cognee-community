@@ -35,8 +35,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test-redis:
-    name: "Redis Community Adapter Test"
+  run-redis-example:
+    name: "Redis Community Adapter Example"
     runs-on: ubuntu-22.04
     services:
       redis:
@@ -86,7 +86,38 @@ jobs:
             poetry run python examples/example.py
           else
             poetry run python example.py
-          fi 
+          fi
+
+  test-redis:
+    name: "Redis Community Adapter Test"
+    runs-on: ubuntu-22.04
+    services:
+      redis:
+        image: redis/redis-stack-server:7.4.0-v1
+        ports:
+          - 6379:6379
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Community Setup
+        uses: ./.github/actions/community_setup
+        with:
+          python-version: '3.11.x'
+          package-path: packages/vector/redis
+          event-type: ${{ inputs.event-type }}
+
+      - name: Wait for Redis to be ready
+        run: |
+          echo "Waiting for Redis to be ready..."
+          for i in {1..30}; do
+            if nc -z localhost 6379; then
+              echo "Redis is ready!"
+              break
+            fi
+            echo "Redis not ready yet... (attempt $i/30)"
+            sleep 2
+          done
 
       - name: Run Redis Tests
         env:

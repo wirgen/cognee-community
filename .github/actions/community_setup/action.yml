@@ -56,6 +56,13 @@ runs:
         cd ${{ inputs.package-path }}
         poetry run python -m pip install --upgrade cognee
 
+    - name: Set up Pytest
+      shell: bash
+      run: |
+        cd ${{ inputs.package-path }}
+        poetry run pip install pytest
+        poetry run pip install pytest_asyncio
+
     - name: Verify installation
       shell: bash
       run: |
