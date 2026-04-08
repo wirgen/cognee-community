@@ -1,5 +1,6 @@
 import asyncio
 import os
+import importlib
 import pathlib
 from collections import Counter
 
@@ -27,6 +28,10 @@ from cognee.modules.users.methods import get_default_user
 from cognee.shared.logging_utils import get_logger
 
 logger = get_logger()
+
+adapter_pkg = os.getenv("ADAPTER_PACKAGE")
+if adapter_pkg:
+    importlib.import_module(f"{adapter_pkg}.register")
 
 
 async def _reset_engines_and_prune() -> None:
