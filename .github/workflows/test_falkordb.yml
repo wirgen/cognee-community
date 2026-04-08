@@ -35,8 +35,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test-falkordb:
-    name: "FalkorDB Community Adapter Test"
+  run-falkordb-example:
+    name: "FalkorDB Community Adapter Example"
     runs-on: ubuntu-22.04
     services:
       falkordb:
@@ -100,6 +100,51 @@ jobs:
         working-directory: ./packages/hybrid/falkordb
         run: poetry run python examples/example.py
 
+  test-falkordb:
+    name: "FalkorDB Community Adapter Test"
+    runs-on: ubuntu-22.04
+    services:
+      falkordb:
+        image: falkordb/falkordb:edge
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Community Setup
+        uses: ./.github/actions/community_setup
+        with:
+          python-version: '3.11.x'
+          package-path: packages/hybrid/falkordb
+          event-type: ${{ inputs.event-type }}
+
+      - name: Wait for FalkorDB
+        run: |
+          for i in {1..30}; do
+            if nc -z localhost 6379; then
+              echo "FalkorDB is ready"
+              break
+            fi
+            echo "Waiting for FalkorDB..."
+            sleep 2
+          done
+
+      - name: Check API keys availability
+        id: check-keys
+        run: |
+          if [ -n "${{ secrets.LLM_API_KEY }}" ] && [ -n "${{ secrets.EMBEDDING_API_KEY }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::LLM/Embedding API keys not available — skipping LLM-dependent tests (likely a fork PR)"
+          fi
+
       - name: Run FalkorDB Tests
         if: steps.check-keys.outputs.available == 'true'
         env:
@@ -120,6 +165,51 @@ jobs:
         working-directory: ./packages/hybrid/falkordb
         run: poetry run python tests/test_falkordb.py
 
+  test-falkordb-search:
+    name: "FalkorDB Community Adapter Test"
+    runs-on: ubuntu-22.04
+    services:
+      falkordb:
+        image: falkordb/falkordb:edge
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Community Setup
+        uses: ./.github/actions/community_setup
+        with:
+          python-version: '3.11.x'
+          package-path: packages/hybrid/falkordb
+          event-type: ${{ inputs.event-type }}
+
+      - name: Wait for FalkorDB
+        run: |
+          for i in {1..30}; do
+            if nc -z localhost 6379; then
+              echo "FalkorDB is ready"
+              break
+            fi
+            echo "Waiting for FalkorDB..."
+            sleep 2
+          done
+
+      - name: Check API keys availability
+        id: check-keys
+        run: |
+          if [ -n "${{ secrets.LLM_API_KEY }}" ] && [ -n "${{ secrets.EMBEDDING_API_KEY }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::LLM/Embedding API keys not available — skipping LLM-dependent tests (likely a fork PR)"
+          fi
+
       - name: Run FalkorDB Search Tests
         if: steps.check-keys.outputs.available == 'true'
         env:
@@ -137,5 +227,6 @@ jobs:
           GRAPH_DB_PORT: '6379'
           GRAPH_DATASET_DATABASE_HANDLER: 'falkor_graph_local'
           VECTOR_DATASET_DATABASE_HANDLER: 'falkor_vector_local'
+          ADAPTER_PACKAGE: cognee_community_hybrid_adapter_falkor
         working-directory: ./packages
         run: poetry run pytest tests/test_search_db.py
