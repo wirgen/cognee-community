@@ -215,5 +215,5 @@ jobs:
           EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
           VECTOR_DB_PROVIDER: 'redis'
           VECTOR_DB_URL: 'redis://localhost:6379'
-        working-directory: ./packages
-        run: poetry run pytest tests/test_search_db.py
+        working-directory: ./packages/vector/redis
+        run: poetry run pytest ../../tests/test_search_db.py
