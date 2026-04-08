@@ -228,5 +228,5 @@ jobs:
           GRAPH_DATASET_DATABASE_HANDLER: 'falkor_graph_local'
           VECTOR_DATASET_DATABASE_HANDLER: 'falkor_vector_local'
           ADAPTER_PACKAGE: cognee_community_hybrid_adapter_falkor
-        working-directory: ./packages
-        run: poetry run pytest tests/test_search_db.py
+        working-directory: ./packages/hybrid/falkordb
+        run: poetry run pytest ../../tests/test_search_db.py

@@ -165,5 +165,5 @@ jobs:
           VECTOR_DATASET_DATABASE_HANDLER: 'qdrant'
           QDRANT_APT_URL: 'http://localhost:6333'
           ADAPTER_PACKAGE: cognee_community_vector_adapter_qdrant
-        working-directory: ./packages
-        run: poetry run pytest tests/test_search_db.py
+        working-directory: ./packages/vector/qdrant
+        run: poetry run pytest ../../tests/test_search_db.py
