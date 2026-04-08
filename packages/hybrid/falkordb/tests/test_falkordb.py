@@ -30,6 +30,24 @@ async def check_falkordb_connection():
 
 
 async def test_vector_engine_search_none_limit():
+    file_path_quantum = os.path.join(
+        pathlib.Path(__file__).parent.parent.parent.parent, "test_data/Quantum_computers.txt"
+    )
+
+    file_path_nlp = os.path.join(
+        pathlib.Path(__file__).parent.parent.parent.parent,
+        "test_data/Natural_language_processing.txt",
+    )
+
+    await cognee.prune.prune_data()
+    await cognee.prune.prune_system(metadata=True)
+
+    await cognee.add(file_path_quantum)
+
+    await cognee.add(file_path_nlp)
+
+    await cognee.cognify()
+
     query_text = "Tell me about Quantum computers"
 
     from cognee.infrastructure.databases.vector import get_vector_engine
