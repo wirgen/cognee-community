@@ -75,7 +75,7 @@ jobs:
           EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
           VECTOR_DB_PROVIDER: 'qdrant'
           VECTOR_DATASET_DATABASE_HANDLER: 'qdrant'
-          QDRANT_APT_URL: 'http://localhost:6333'
+          QDRANT_API_URL: 'http://localhost:6333'
         working-directory: ./packages/vector/qdrant
         run: poetry run python example.py
 
@@ -119,6 +119,6 @@ jobs:
           EMBEDDING_API_VERSION: ${{ secrets.EMBEDDING_API_VERSION }}
           VECTOR_DB_PROVIDER: 'qdrant'
           VECTOR_DATASET_DATABASE_HANDLER: 'qdrant'
-          QDRANT_APT_URL: 'http://localhost:6333'
+          QDRANT_API_URL: 'http://localhost:6333'
         working-directory: ./packages/vector/qdrant
         run: poetry run python tests/test_qdrant.py
