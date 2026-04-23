@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11,<=3.13"
 dependencies = [
     "qdrant-client>=1.16.0",
-    "cognee==0.5.6",
+    "cognee>=0.5.6",
     "starlette>=0.48.0",
     "instructor>=1.11"
 ]
